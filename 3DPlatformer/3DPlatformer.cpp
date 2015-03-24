@@ -28,7 +28,7 @@ namespace Platformer
 	Platformer::Platformer()
 	{
 		device =
-			irr::createDevice(irr::video::EDT_SOFTWARE, irr::core::dimension2d<irr::u32>(800, 600), 16,
+			createDevice(EDT_BURNINGSVIDEO, dimension2d<u32>(800, 600), 16,
 			false, false, false, NULL);
 
 		if (!device)
@@ -104,7 +104,7 @@ int main(int argc, char * argv[])
 	Platformer::Platformer * pMain = new Platformer::Platformer();
 
 	if (!check(pMain))
-	{ 
+	{
 		std::cerr << "Failed creation." << std::endl;
 		return 2;
 	}
