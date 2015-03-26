@@ -18,16 +18,26 @@ namespace Platformer{
 
 		void init(void);
 		void run(void);
+		void update(void);
+
+		void start(void);
+		void stop(void);
 
 		IrrlichtDevice * device;
 
 		bool success = true;
 	private:
-		IVideoDriver* driver;
-		ISceneManager* smgr;
-		IGUIEnvironment* guienv;
+		IVideoDriver * driver;
+		ISceneManager * smgr;
+		IGUIEnvironment * guienv;
 
-		IAnimatedMesh* testMesh;
+		IAnimatedMesh * testMesh;
+
+		ICameraSceneNode * camera;
+
+		bool isFloor = false, isUpdate = false;
+
+		std::thread * updateThread;
 	};
 
 	bool check(Platformer *);
