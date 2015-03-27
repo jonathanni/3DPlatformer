@@ -31,8 +31,6 @@ namespace Platformer{
 		ISceneManager * smgr;
 		IGUIEnvironment * guienv;
 
-		IAnimatedMesh * testMesh;
-
 		ICameraSceneNode * camera;
 
 		bool isFloor = false, isUpdate = false;

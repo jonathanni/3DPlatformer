@@ -40,7 +40,7 @@ namespace Platformer
 
 		device =
 			createDevice(driverType, dimension2d<u32>(800, 600), 16,
-			false, false, false, NULL);
+			false, true, false, NULL);
 
 		if (!device)
 			success = false;
@@ -63,36 +63,22 @@ namespace Platformer
 		smgr = device->getSceneManager();
 		guienv = device->getGUIEnvironment();
 
-		guienv->addStaticText(L"Lorem ipsum dolor sit amet.",
-			rect<s32>(10, 10, 260, 22), true);
+		smgr->setAmbientLight(SColorf(0x00c0c0c0));
 
-		testMesh = smgr->getMesh("testMesh.x");
+		IMeshSceneNode * floorNode = smgr->addCubeSceneNode(2.0f, NULL, 0, vector3df(0, -1, 0), vector3df(0, 0, 0), vector3df(1000, 1, 1000));
 
-		if (!testMesh)
-		{
-			device->drop();
-			success = false;
-		}
+		floorNode->setMaterialFlag(video::EMF_LIGHTING, true);
 
-		IAnimatedMeshSceneNode * meshNode = smgr->addAnimatedMeshSceneNode(testMesh);
-		IMeshSceneNode * floorNode = smgr->addCubeSceneNode(100.0f, NULL, 0, vector3df(0, -50, 0));
+		floorNode->getMaterial(0).DiffuseColor.set(0xff000000);
+		floorNode->getMaterial(0).AmbientColor.set(0xff404040);
+		floorNode->getMaterial(0).Shininess = 0;
 
-		if (meshNode)
-		{
-			meshNode->setMaterialFlag(EMF_LIGHTING, false);
-			meshNode->setMaterialTexture(0, driver->getTexture("dirt.png"));
-			meshNode->setPosition(vector3df(0, 1, 0));
-		}
+		ITriangleSelector * floorNodeSelector = smgr->createOctreeTriangleSelector(floorNode->getMesh(), floorNode, 12);
 
-		ITriangleSelector * meshNodeSelector = smgr->createOctreeTriangleSelector(testMesh->getMesh(0),
-			meshNode, 128), *floorNodeSelector = smgr->createOctreeTriangleSelector(floorNode->getMesh(), floorNode, 12);
-
-		meshNode->setTriangleSelector(meshNodeSelector);
 		floorNode->setTriangleSelector(floorNodeSelector);
 
 		IMetaTriangleSelector * metaSelector = smgr->createMetaTriangleSelector();
 
-		metaSelector->addTriangleSelector(meshNodeSelector);
 		metaSelector->addTriangleSelector(floorNodeSelector);
 
 		{
@@ -112,9 +98,9 @@ namespace Platformer
 			keyMap[5].Action = EKA_CROUCH;
 			keyMap[5].KeyCode = KEY_LSHIFT;
 
-			camera = smgr->addCameraSceneNodeFPS(0, 100, 0.01f, -1, keyMap, 6, true, 0.5f);
+			camera = smgr->addCameraSceneNodeFPS(0, 100, 0.4f, -1, keyMap, 6, true, 3.0f);
 
-			camera->setPosition(vector3df(3, 1.6f, 3));
+			camera->setPosition(vector3df(5, 1.6f, 5));
 			camera->setTarget(vector3df(0, 0, 0));
 			camera->setFarValue(5000);
 
@@ -122,7 +108,6 @@ namespace Platformer
 				smgr->createCollisionResponseAnimator(metaSelector, camera, vector3df(1.0f, 1.6f, 1.0f), vector3df(0, -9.8f, 0), vector3df(0, 1.6f, 0));
 
 			metaSelector->drop();
-			meshNodeSelector->drop();
 			floorNodeSelector->drop();
 
 			camera->addAnimator(collider);
