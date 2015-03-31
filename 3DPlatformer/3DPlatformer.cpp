@@ -65,7 +65,19 @@ namespace Platformer
 
 		smgr->setAmbientLight(SColorf(0x00c0c0c0));
 
-		IMeshSceneNode * floorNode = smgr->addCubeSceneNode(2.0f, NULL, 0, vector3df(0, -1, 0), vector3df(0, 0, 0), vector3df(1000, 1, 1000));
+		IAnimatedMesh* levelMesh = smgr->getMesh("3dplat00.x");
+
+		if (!levelMesh)
+		{
+			device->drop();
+			std::exit(1);
+		}
+
+		ISceneNode * levelNode = smgr->addAnimatedMeshSceneNode(levelMesh, NULL, 1, vector3df(0, 30, 0), vector3df(0, 0, 0), vector3df(100, 100, 100)), *floorNode = smgr->addCubeSceneNode(2.0f, NULL, 0, vector3df(0, -1, 0), vector3df(0, 0, 0), vector3df(1000, 1, 1000));
+
+		levelNode->setMaterialFlag(EMF_LIGHTING, true);
+		levelNode->setMaterialFlag(EMF_NORMALIZE_NORMALS, true);
+		levelNode->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
 
 		floorNode->setMaterialFlag(video::EMF_LIGHTING, true);
 
@@ -73,13 +85,15 @@ namespace Platformer
 		floorNode->getMaterial(0).AmbientColor.set(0xff404040);
 		floorNode->getMaterial(0).Shininess = 0;
 
-		ITriangleSelector * floorNodeSelector = smgr->createOctreeTriangleSelector(floorNode->getMesh(), floorNode, 12);
+		ITriangleSelector * levelNodeSelector = smgr->createOctreeTriangleSelector(levelMesh, levelNode, 800), *floorNodeSelector = smgr->createOctreeTriangleSelector(((IMeshSceneNode *)floorNode)->getMesh(), floorNode, 12);
 
 		floorNode->setTriangleSelector(floorNodeSelector);
+		levelNode->setTriangleSelector(levelNodeSelector);
 
 		IMetaTriangleSelector * metaSelector = smgr->createMetaTriangleSelector();
 
 		metaSelector->addTriangleSelector(floorNodeSelector);
+		metaSelector->addTriangleSelector(levelNodeSelector);
 
 		{
 			SKeyMap keyMap[6];
@@ -100,12 +114,12 @@ namespace Platformer
 
 			camera = smgr->addCameraSceneNodeFPS(0, 100, 0.4f, -1, keyMap, 6, true, 3.0f);
 
-			camera->setPosition(vector3df(5, 1.6f, 5));
+			camera->setPosition(vector3df(900, 1000, 900));
 			camera->setTarget(vector3df(0, 0, 0));
 			camera->setFarValue(5000);
 
 			scene::ISceneNodeAnimatorCollisionResponse * collider =
-				smgr->createCollisionResponseAnimator(metaSelector, camera, vector3df(1.0f, 1.6f, 1.0f), vector3df(0, -9.8f, 0), vector3df(0, 1.6f, 0));
+				smgr->createCollisionResponseAnimator(metaSelector, camera, vector3df(20, 60, 20), vector3df(0, -9.8f, 0), vector3df(0, 1.6f, 0));
 
 			metaSelector->drop();
 			floorNodeSelector->drop();

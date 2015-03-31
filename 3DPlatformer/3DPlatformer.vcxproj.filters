@@ -51,5 +51,8 @@
     <None Include="Irrlicht.dll">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="3dplat00.x">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
