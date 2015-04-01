@@ -3,13 +3,7 @@
 
 namespace Platformer{
 
-	// Irrlicht namespaces
 	using namespace irr;
-	using namespace core;
-	using namespace scene;
-	using namespace video;
-	using namespace io;
-	using namespace gui;
 
 	class Platformer{
 	public:
@@ -23,19 +17,24 @@ namespace Platformer{
 		void start(void);
 		void stop(void);
 
-		IrrlichtDevice * device;
+		irr::IrrlichtDevice *device;
 
 		bool success = true;
 	private:
-		IVideoDriver * driver;
-		ISceneManager * smgr;
-		IGUIEnvironment * guienv;
+		void drawBoundingBoxes(void);
 
-		ICameraSceneNode * camera;
+		video::IVideoDriver *driver;
+		scene::ISceneManager *smgr;
+		gui::IGUIEnvironment *guienv;
+
+		scene::ICameraSceneNode *camera;
+
+		scene::ISceneNode *levelNode, *floorNode;
 
 		bool isFloor = false, isUpdate = false;
 
-		std::thread * updateThread;
+		std::vector<scene::ISceneNode*> sceneNodes;
+		std::thread *updateThread;
 	};
 
 	bool check(Platformer *);
