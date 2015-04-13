@@ -98,6 +98,8 @@
   <ItemGroup>
     <None Include="3dplat00.x" />
     <None Include="Irrlicht.dll" />
+    <None Include="tree00.x" />
+    <None Include="world.x" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
