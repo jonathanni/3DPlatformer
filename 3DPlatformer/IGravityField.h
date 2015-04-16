@@ -2,6 +2,8 @@
 #define _IGRAVITYFIELD_H
 
 #include <irrlicht.h>
+#include <math.h>
+#define GRAVITY 6.67*pow(10.0, -11.0)
 namespace Platformer
 
 {

@@ -13,6 +13,7 @@
 #include <irrlicht.h>
 
 #include "3DPlatformer.h"
+#include "GravityBox.h"
 
 #ifdef _IRR_WINDOWS_
 #pragma comment(lib, "Irrlicht.lib")
