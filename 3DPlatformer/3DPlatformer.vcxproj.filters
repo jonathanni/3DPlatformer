@@ -24,12 +24,33 @@
     <ClInclude Include="3DPlatformer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CustomCameraSceneNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGravityField.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MassObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GravityBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="3DPlatformer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomCameraSceneNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MassObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GravityBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

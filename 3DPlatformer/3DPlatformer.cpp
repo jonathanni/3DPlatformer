@@ -67,7 +67,7 @@ namespace Platformer
 			device->drop();
 			std::exit(1);
 		}
-		
+
 		levelNode = smgr->addAnimatedMeshSceneNode(levelMesh, NULL, 1,
 			core::vector3df(0, 300, 0), core::vector3df(0, 0, 0), core::vector3df(100, 100, 100));
 		floorNode = smgr->addCubeSceneNode(2.0f, NULL, 0,
@@ -87,7 +87,7 @@ namespace Platformer
 		floorNode->getMaterial(0).Shininess = 0;
 
 		scene::ITriangleSelector *levelNodeSelector = smgr->createOctreeTriangleSelector(levelMesh, levelNode, 128),
-								 *floorNodeSelector = smgr->createOctreeTriangleSelector(((scene::IMeshSceneNode *)floorNode)->getMesh(), floorNode, 12);
+			*floorNodeSelector = smgr->createOctreeTriangleSelector(((scene::IMeshSceneNode *)floorNode)->getMesh(), floorNode, 12);
 
 		levelNode->setTriangleSelector(levelNodeSelector);
 		floorNode->setTriangleSelector(floorNodeSelector);
@@ -122,7 +122,7 @@ namespace Platformer
 
 			scene::ISceneNodeAnimatorCollisionResponse * collider =
 				smgr->createCollisionResponseAnimator(metaSelector, camera,
-													  core::vector3df(20, 60, 20), core::vector3df(0, -9.8f, 0), core::vector3df(0, 1.6f, 0));
+				core::vector3df(20, 60, 20), core::vector3df(0, -9.8f, 0), core::vector3df(0, 1.6f, 0));
 
 			metaSelector->drop();
 			levelNodeSelector->drop();
@@ -135,7 +135,7 @@ namespace Platformer
 
 	void Platformer::drawBoundingBoxes()
 	{
-		for (scene::ISceneNode* i:sceneNodes)
+		for (scene::ISceneNode* i : sceneNodes)
 			driver->draw3DBox(i->getBoundingBox(), video::SColor(0xffff0000));
 	}
 
