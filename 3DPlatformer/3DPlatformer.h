@@ -4,6 +4,7 @@
 namespace Platformer{
 
 	using namespace irr;
+	using namespace std;
 
 	class Platformer{
 	public:

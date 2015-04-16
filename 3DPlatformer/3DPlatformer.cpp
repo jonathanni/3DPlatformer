@@ -59,17 +59,17 @@ namespace Platformer
 		guienv = device->getGUIEnvironment();
 
 		smgr->setAmbientLight(video::SColorf(0x00c0c0c0));
-
-		irr::scene::IAnimatedMesh* levelMesh = smgr->getMesh("3dplat00.x");
+		
+		scene::IAnimatedMesh* levelMesh = smgr->getMesh("world.x");
 
 		if (!levelMesh)
 		{
 			device->drop();
-			std::exit(1);
+			exit(1);
 		}
 
 		levelNode = smgr->addAnimatedMeshSceneNode(levelMesh, NULL, 1,
-			core::vector3df(0, 300, 0), core::vector3df(0, 0, 0), core::vector3df(100, 100, 100));
+			core::vector3df(0, 100, 0), core::vector3df(0, 0, 0), core::vector3df(100, 100, 100));
 		floorNode = smgr->addCubeSceneNode(2.0f, NULL, 0,
 			core::vector3df(0, -1, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
 
@@ -81,12 +81,13 @@ namespace Platformer
 		levelNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
 
 		floorNode->setMaterialFlag(video::EMF_LIGHTING, true);
+		floorNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
 
 		floorNode->getMaterial(0).DiffuseColor.set(0xff000000);
 		floorNode->getMaterial(0).AmbientColor.set(0xff404040);
 		floorNode->getMaterial(0).Shininess = 0;
 
-		scene::ITriangleSelector *levelNodeSelector = smgr->createOctreeTriangleSelector(levelMesh, levelNode, 128),
+		scene::ITriangleSelector *levelNodeSelector = smgr->createTriangleSelector(levelMesh, levelNode),
 			*floorNodeSelector = smgr->createOctreeTriangleSelector(((scene::IMeshSceneNode *)floorNode)->getMesh(), floorNode, 12);
 
 		levelNode->setTriangleSelector(levelNodeSelector);
@@ -162,7 +163,7 @@ namespace Platformer
 		{
 			isFloor = camera->getPosition().Y <= 0;
 
-			std::this_thread::sleep_for(std::chrono::milliseconds(20));
+			this_thread::sleep_for(chrono::milliseconds(20));
 		}
 	}
 
