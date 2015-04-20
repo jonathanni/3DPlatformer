@@ -61,25 +61,25 @@ namespace Platformer
 
 		smgr->setAmbientLight(video::SColorf(0x00c0c0c0));
 		
-		scene::IAnimatedMesh* levelMesh = smgr->getMesh("world.x");
+		scene::IAnimatedMesh* treeMesh = smgr->getMesh("tree00.b3d");
 
-		if (!levelMesh)
+		if (!treeMesh)
 		{
 			device->drop();
 			exit(1);
 		}
 
-		levelNode = smgr->addAnimatedMeshSceneNode(levelMesh, NULL, 1,
-			core::vector3df(0, 100, 0), core::vector3df(0, 0, 0), core::vector3df(100, 100, 100));
+		treeNode = smgr->addAnimatedMeshSceneNode(treeMesh, NULL, 1,
+			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
 		floorNode = smgr->addCubeSceneNode(2.0f, NULL, 0,
 			core::vector3df(0, -1, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
 
 		sceneNodes.push_back(floorNode);
-		sceneNodes.push_back(levelNode);
+		sceneNodes.push_back(treeNode);
 
-		levelNode->setMaterialFlag(video::EMF_LIGHTING, true);
-		levelNode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
-		levelNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
+		treeNode->setMaterialFlag(video::EMF_LIGHTING, true);
+		treeNode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
+		treeNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
 
 		floorNode->setMaterialFlag(video::EMF_LIGHTING, true);
 		floorNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
@@ -88,16 +88,13 @@ namespace Platformer
 		floorNode->getMaterial(0).AmbientColor.set(0xff404040);
 		floorNode->getMaterial(0).Shininess = 0;
 
-		scene::ITriangleSelector *levelNodeSelector = smgr->createTriangleSelector(levelMesh, levelNode),
-			*floorNodeSelector = smgr->createOctreeTriangleSelector(((scene::IMeshSceneNode *)floorNode)->getMesh(), floorNode, 12);
+		scene::ITriangleSelector *floorNodeSelector = smgr->createOctreeTriangleSelector(((scene::IMeshSceneNode *)floorNode)->getMesh(), floorNode, 12);
 
-		levelNode->setTriangleSelector(levelNodeSelector);
 		floorNode->setTriangleSelector(floorNodeSelector);
 
 		scene::IMetaTriangleSelector *metaSelector = smgr->createMetaTriangleSelector();
 
 		metaSelector->addTriangleSelector(floorNodeSelector);
-		metaSelector->addTriangleSelector(levelNodeSelector);
 
 		{
 			SKeyMap keyMap[6];
@@ -127,7 +124,6 @@ namespace Platformer
 				core::vector3df(20, 60, 20), core::vector3df(0, -9.8f, 0), core::vector3df(0, 1.6f, 0));
 
 			metaSelector->drop();
-			levelNodeSelector->drop();
 			floorNodeSelector->drop();
 
 			camera->addAnimator(collider);
