@@ -6,8 +6,11 @@ namespace Platformer
 	using namespace irr;
 	class GravityBox : public IGravityField
 	{
-	public:
-		core::vector3d<float> calcDownVector();
+		private:
+			core::vector3d<float> downVector;
+		public:
+			void setDownVector(core::vector3d<float>);
+			core::vector3d<float> calcDownVector();
 	};
 }
 
