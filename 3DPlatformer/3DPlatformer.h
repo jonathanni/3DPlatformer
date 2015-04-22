@@ -30,7 +30,7 @@ namespace Platformer{
 
 		scene::ICameraSceneNode *camera;
 
-		scene::ISceneNode *levelNode, *floorNode;
+		scene::ISceneNode *treeNode, *floorNode;
 
 		bool isFloor = false, isUpdate = false;
 

@@ -78,7 +78,7 @@
     <None Include="world.x">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="tree00.x">
+    <None Include="tree00.b3d">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
