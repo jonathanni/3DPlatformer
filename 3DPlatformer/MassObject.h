@@ -8,7 +8,7 @@ namespace Platformer
 	{
 	private:
 		core::vector3d<float> position;
-
+		
 		float mass;
 
 	public:
