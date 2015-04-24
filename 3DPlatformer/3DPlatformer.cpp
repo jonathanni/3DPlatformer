@@ -160,7 +160,10 @@ namespace Platformer
 		{
 			isFloor = camera->getPosition().Y <= 0;
 
-			this_thread::sleep_for(chrono::milliseconds(20));
+			this_thread::sleep_for(chrono::milliseconds(PLATFORMER_TIME_CONSTANT));
+			for (IGravityField i : fields){
+
+			}
 		}
 	}
 
