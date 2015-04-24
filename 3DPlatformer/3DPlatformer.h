@@ -1,6 +1,7 @@
 #ifndef _3DPLATFORMER_H
 #define _3DPLATFORMER_H
 
+#define PLATFORMER_TIME_CONSTANT 20
 namespace Platformer{
 
 	using namespace irr;
@@ -37,6 +38,8 @@ namespace Platformer{
 
 		std::vector<scene::ISceneNode*> sceneNodes;
 		std::thread *updateThread;
+		
+		vector<IGravityField> fields;
 	};
 
 	bool check(Platformer *);

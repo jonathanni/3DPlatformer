@@ -6,7 +6,7 @@ namespace Platformer
 	using namespace irr;
 	core::vector3d<float> GravityBox::calcDownVector(core::vector3d<float> cameraPos)
 	{
-		if (cameraPos[0] > minX && cameraPos[0] < maxX && cameraPos[1] > minY && cameraPos[1] < maxY && cameraPos[2] > minZ && cameraPos[2] < maxZ){		
+		if (cameraPos.X > minX && cameraPos.X < maxX && cameraPos.Y > minY && cameraPos.Y < maxY && cameraPos.Z > minZ && cameraPos.Z < maxZ){		
 			return downVector;
 		}
 		else{
