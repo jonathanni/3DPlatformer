@@ -69,11 +69,22 @@ namespace Platformer
 			exit(1);
 		}
 
+		sun = smgr->addLightSceneNode();
+		sun->getLightData().Type = video::ELT_DIRECTIONAL;
+
+		sunController = smgr->addEmptySceneNode();
+		sun->setPosition(core::vector3df(0, 0, 1));
+		sun->setParent(sunController);
+
+		sunController->setRotation(core::vector3df(-90, -90, 0));
+
 		treeNode = smgr->addAnimatedMeshSceneNode(treeMesh, NULL, 1,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
 		floorNode = smgr->addCubeSceneNode(2.0f, NULL, 0,
 			core::vector3df(0, -1, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
 
+		sceneNodes.push_back(sun);
+		sceneNodes.push_back(sunController);
 		sceneNodes.push_back(floorNode);
 		sceneNodes.push_back(treeNode);
 

@@ -29,8 +29,9 @@ namespace Platformer{
 		gui::IGUIEnvironment *guienv;
 
 		scene::ICameraSceneNode *camera;
-
 		scene::ISceneNode *treeNode, *floorNode;
+		scene::ILightSceneNode *sun;
+		scene::ISceneNode *sunController;
 
 		bool isFloor = false, isUpdate = false;
 
