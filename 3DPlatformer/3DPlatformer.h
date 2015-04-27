@@ -1,7 +1,10 @@
 #ifndef _3DPLATFORMER_H
 #define _3DPLATFORMER_H
 
+#include "IGravityField.h"
+
 #define PLATFORMER_TIME_CONSTANT 20
+
 namespace Platformer{
 
 	using namespace irr;

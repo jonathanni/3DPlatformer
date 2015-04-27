@@ -81,7 +81,7 @@ namespace Platformer
 		treeNode = smgr->addAnimatedMeshSceneNode(treeMesh, NULL, 1,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
 		floorNode = smgr->addCubeSceneNode(2.0f, NULL, 0,
-			core::vector3df(0, -1, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
+			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
 
 		sceneNodes.push_back(sun);
 		sceneNodes.push_back(sunController);
@@ -172,9 +172,9 @@ namespace Platformer
 			isFloor = camera->getPosition().Y <= 0;
 
 			this_thread::sleep_for(chrono::milliseconds(PLATFORMER_TIME_CONSTANT));
-			for (IGravityField i : fields){
+			//for (IGravityField i : fields){
 
-			}
+			//}
 		}
 	}
 
