@@ -63,6 +63,8 @@ namespace Platformer{
 		};
 		bool success = true;
 	private:
+		scene::IAnimatedMesh *loadMesh(char *);
+
 		void drawBoundingBoxes(void);
 
 		video::IVideoDriver *driver;
@@ -70,7 +72,8 @@ namespace Platformer{
 		gui::IGUIEnvironment *guienv;
 
 		scene::ICameraSceneNode *camera;
-		scene::ISceneNode *treeNode, *floorNode;
+		scene::IAnimatedMeshSceneNode *treeNode, *portalNode;
+		scene::ISceneNode *floorNode;
 		scene::ILightSceneNode *sun;
 		scene::ISceneNode *sunController;
 

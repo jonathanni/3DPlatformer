@@ -11,6 +11,7 @@
 #include <vector>
 
 #include <irrlicht.h>
+
 #include "3DPlatformer.h"
 #include "GravityBox.h"
 
@@ -21,7 +22,6 @@
 
 namespace Platformer
 {
-	
 	Platformer::Platformer()
 	{
 		video::E_DRIVER_TYPE driverType;
@@ -31,11 +31,10 @@ namespace Platformer
 #else
 		driverType = video::EDT_OPENGL;
 #endif
-		
-	
-			device =
+
+		device =
 			irr::createDevice(driverType, core::dimension2d<u32>(800, 600), 16,
-			false, true, false, &spaceBarEvent);
+			false, true, false, NULL);
 
 		if (!device)
 			success = false;
@@ -62,14 +61,6 @@ namespace Platformer
 
 		smgr->setAmbientLight(video::SColorf(0x00c0c0c0));
 
-		scene::IAnimatedMesh* treeMesh = smgr->getMesh("tree00.b3d");
-
-		if (!treeMesh)
-		{
-			device->drop();
-			exit(1);
-		}
-
 		sun = smgr->addLightSceneNode();
 		sun->getLightData().Type = video::ELT_DIRECTIONAL;
 
@@ -79,8 +70,10 @@ namespace Platformer
 
 		sunController->setRotation(core::vector3df(-90, -90, 0));
 
-		treeNode = smgr->addAnimatedMeshSceneNode(treeMesh, NULL, 1,
+		treeNode = smgr->addAnimatedMeshSceneNode(loadMesh("tree00.b3d"), NULL, 1,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
+		portalNode = smgr->addAnimatedMeshSceneNode(loadMesh("portal.b3d"), NULL, 2, 
+			core::vector3df(10, 10, 0), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
 		floorNode = smgr->addCubeSceneNode(2.0f, NULL, 0,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
 
@@ -88,16 +81,23 @@ namespace Platformer
 		sceneNodes.push_back(sunController);
 		sceneNodes.push_back(floorNode);
 		sceneNodes.push_back(treeNode);
+		sceneNodes.push_back(portalNode);
+
+		velocity.set(0, 0, 0);
 
 		treeNode->setMaterialFlag(video::EMF_LIGHTING, true);
 		treeNode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 		treeNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
-		fields.push_back(new GravityBox(-10000, 10000, -10000, 10000, -10000, 10000));
-		core::vector3d<float> downVector;
-		downVector.set(0, -9.8, 0);
-		((GravityBox*)fields.at(0))->setDownVector(downVector);
 
-		velocity.set(0, 0, 0);
+		portalNode->setMaterialFlag(video::EMF_LIGHTING, true);
+
+		portalNode->setJointMode(scene::EJUOR_CONTROL);
+		portalNode->setDebugDataVisible(scene::EDS_SKELETON);
+
+		portalNode->setFrameLoop(0, 95);
+		portalNode->setAnimationSpeed(24);
+		portalNode->setCurrentFrame(24);
+
 		floorNode->setMaterialFlag(video::EMF_LIGHTING, true);
 		floorNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
 
@@ -105,7 +105,8 @@ namespace Platformer
 		floorNode->getMaterial(0).AmbientColor.set(0xff404040);
 		floorNode->getMaterial(0).Shininess = 0;
 
-		scene::ITriangleSelector *floorNodeSelector = smgr->createOctreeTriangleSelector(((scene::IMeshSceneNode *)floorNode)->getMesh(), floorNode, 12);
+		scene::ITriangleSelector *floorNodeSelector = smgr->createOctreeTriangleSelector(
+			((scene::IMeshSceneNode *)floorNode)->getMesh(), floorNode, 12);
 
 		floorNode->setTriangleSelector(floorNodeSelector);
 
@@ -138,7 +139,7 @@ namespace Platformer
 
 			scene::ISceneNodeAnimatorCollisionResponse * collider =
 				smgr->createCollisionResponseAnimator(metaSelector, camera,
-				core::vector3df(20, 60, 20), core::vector3df(0, 0, 0), core::vector3df(0, 1.6f, 0));
+				core::vector3df(20, 60, 20), core::vector3df(0, -9.8f, 0), core::vector3df(0, 1.6f, 0));
 
 			metaSelector->drop();
 			floorNodeSelector->drop();
@@ -146,6 +147,19 @@ namespace Platformer
 			camera->addAnimator(collider);
 			collider->drop();
 		}
+	}
+
+	scene::IAnimatedMesh* Platformer::loadMesh(char * path)
+	{
+		scene::IAnimatedMesh *mesh = smgr->getMesh(path);
+
+		if (!mesh)
+		{
+			device->drop();
+			exit(1);
+		}
+
+		return mesh;
 	}
 
 	void Platformer::drawBoundingBoxes()
@@ -185,6 +199,7 @@ namespace Platformer
 			totalDownVector.set(0, 0, 0);
 
 			this_thread::sleep_for(chrono::milliseconds(PLATFORMER_TIME_CONSTANT));
+			//for (IGravityField i : fields){
 			for (IGravityField *i : fields){
 				totalDownVector = totalDownVector + i->calcDownVector(camera->getPosition());
 
@@ -263,4 +278,3 @@ int main(int argc, char * argv[])
 	delete pMain;
 	return 0;
 }
-

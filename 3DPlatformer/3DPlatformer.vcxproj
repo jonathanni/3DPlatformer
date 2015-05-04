@@ -103,10 +103,9 @@
     <Image Include="marble00.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="3dplat00.x" />
     <None Include="Irrlicht.dll" />
+    <None Include="portal.b3d" />
     <None Include="tree00.b3d" />
-    <None Include="world.x" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
