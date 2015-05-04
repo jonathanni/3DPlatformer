@@ -176,8 +176,10 @@ namespace Platformer
 		while (isUpdate)
 		{
 			isFloor = camera->getPosition().Y <= 0;
-			if (isFloor){
+			if (isFloor)
+			{
 				velocity.set(0, 0, 0);
+
 			}
 			core::vector3d<float> totalDownVector;
 			totalDownVector.set(0, 0, 0);
@@ -188,12 +190,15 @@ namespace Platformer
 
 			}
 			velocity += totalDownVector;
-			core::vector3d<float> up(0, 20, 0);
-			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE))
-			{
-				velocity = (up) + (1/PLATFORMER_TIME_CONSTANT)*totalDownVector;
-			
-			//}
+			core::vector3d<float> up(0, 100, 0);
+			if (isFloor){
+				if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE))
+				{
+					velocity = (up)+(1 / PLATFORMER_TIME_CONSTANT)*totalDownVector;
+
+				}
+				
+			}
 			camera->setPosition(camera->getPosition() + velocity);
 		}
 	}
