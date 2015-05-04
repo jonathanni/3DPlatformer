@@ -83,6 +83,8 @@ namespace Platformer
 		sceneNodes.push_back(treeNode);
 		sceneNodes.push_back(portalNode);
 
+		velocity.set(0, 0, 0);
+
 		treeNode->setMaterialFlag(video::EMF_LIGHTING, true);
 		treeNode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 		treeNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);

@@ -23,7 +23,44 @@ namespace Platformer{
 		void stop(void);
 
 		irr::IrrlichtDevice *device;
+		class MyEventReceiver : public IEventReceiver
+		{
+		public:
+			virtual bool OnEvent(const SEvent& event)
+			{
+				if (event.EventType == irr::EET_KEY_INPUT_EVENT)
+				{
+					KeyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
+					{
+						if (event.EventType == irr::EET_KEY_INPUT_EVENT&&!event.KeyInput.PressedDown)
+							switch (event.KeyInput.Key)
+						{
+							case KEY_SPACE:
+								break;
+							case KEY_KEY_2:
+								break;
+							case KEY_KEY_3:
+								break;
+						}
+						return true;
+					}
+				}
+				return false;
+			}
 
+			virtual bool IsKeyDown(EKEY_CODE keyCode) const
+			{
+				return KeyIsDown[keyCode];
+			}
+
+			MyEventReceiver()
+			{
+				memset(KeyIsDown, false, sizeof(KeyIsDown));
+			}
+
+		private:
+			bool KeyIsDown[KEY_KEY_CODES_COUNT];
+		};
 		bool success = true;
 	private:
 		scene::IAnimatedMesh *loadMesh(char *);
@@ -41,11 +78,13 @@ namespace Platformer{
 		scene::ISceneNode *sunController;
 
 		bool isFloor = false, isUpdate = false;
+		MyEventReceiver spaceBarEvent;
 
 		std::vector<scene::ISceneNode*> sceneNodes;
 		std::thread *updateThread;
 		
-		vector<IGravityField> fields;
+		vector<IGravityField*> fields;
+		core::vector3d<float> velocity;
 	};
 
 	bool check(Platformer *);
