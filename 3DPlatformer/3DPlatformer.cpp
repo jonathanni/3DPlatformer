@@ -11,7 +11,6 @@
 #include <vector>
 
 #include <irrlicht.h>
-
 #include "3DPlatformer.h"
 #include "GravityBox.h"
 
@@ -22,6 +21,7 @@
 
 namespace Platformer
 {
+	
 	Platformer::Platformer()
 	{
 		video::E_DRIVER_TYPE driverType;
@@ -31,10 +31,11 @@ namespace Platformer
 #else
 		driverType = video::EDT_OPENGL;
 #endif
-
-		device =
+		
+	
+			device =
 			irr::createDevice(driverType, core::dimension2d<u32>(800, 600), 16,
-			false, true, false, NULL);
+			false, true, false, &spaceBarEvent);
 
 		if (!device)
 			success = false;
@@ -60,7 +61,7 @@ namespace Platformer
 		guienv = device->getGUIEnvironment();
 
 		smgr->setAmbientLight(video::SColorf(0x00c0c0c0));
-		
+
 		scene::IAnimatedMesh* treeMesh = smgr->getMesh("tree00.b3d");
 
 		if (!treeMesh)
@@ -80,7 +81,12 @@ namespace Platformer
 		treeNode->setMaterialFlag(video::EMF_LIGHTING, true);
 		treeNode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 		treeNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
+		fields.push_back(new GravityBox(-10000, 10000, -10000, 10000, -10000, 10000));
+		core::vector3d<float> downVector;
+		downVector.set(0, -9.8, 0);
+		((GravityBox*)fields.at(0))->setDownVector(downVector);
 
+		velocity.set(0, 0, 0);
 		floorNode->setMaterialFlag(video::EMF_LIGHTING, true);
 		floorNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
 
@@ -121,7 +127,7 @@ namespace Platformer
 
 			scene::ISceneNodeAnimatorCollisionResponse * collider =
 				smgr->createCollisionResponseAnimator(metaSelector, camera,
-				core::vector3df(20, 60, 20), core::vector3df(0, -9.8f, 0), core::vector3df(0, 1.6f, 0));
+				core::vector3df(20, 60, 20), core::vector3df(0, 0, 0), core::vector3df(0, 1.6f, 0));
 
 			metaSelector->drop();
 			floorNodeSelector->drop();
@@ -159,11 +165,25 @@ namespace Platformer
 		while (isUpdate)
 		{
 			isFloor = camera->getPosition().Y <= 0;
+			if (isFloor){
+				velocity.set(0, 0, 0);
+			}
+			core::vector3d<float> totalDownVector;
+			totalDownVector.set(0, 0, 0);
 
 			this_thread::sleep_for(chrono::milliseconds(PLATFORMER_TIME_CONSTANT));
-			for (IGravityField i : fields){
+			for (IGravityField *i : fields){
+				totalDownVector = totalDownVector + i->calcDownVector(camera->getPosition());
 
 			}
+			velocity += totalDownVector;
+			core::vector3d<float> up(0, 20, 0);
+			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE))
+			{
+				velocity = (up) + (1/PLATFORMER_TIME_CONSTANT)*totalDownVector;
+			
+			}
+			camera->setPosition(camera->getPosition() + velocity);
 		}
 	}
 
@@ -227,3 +247,4 @@ int main(int argc, char * argv[])
 	delete pMain;
 	return 0;
 }
+
