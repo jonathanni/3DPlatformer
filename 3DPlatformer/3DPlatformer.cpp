@@ -60,14 +60,6 @@ namespace Platformer
 		guienv = device->getGUIEnvironment();
 
 		smgr->setAmbientLight(video::SColorf(0x00c0c0c0));
-		
-		scene::IAnimatedMesh* treeMesh = smgr->getMesh("tree00.b3d");
-
-		if (!treeMesh)
-		{
-			device->drop();
-			exit(1);
-		}
 
 		sun = smgr->addLightSceneNode();
 		sun->getLightData().Type = video::ELT_DIRECTIONAL;
@@ -78,8 +70,10 @@ namespace Platformer
 
 		sunController->setRotation(core::vector3df(-90, -90, 0));
 
-		treeNode = smgr->addAnimatedMeshSceneNode(treeMesh, NULL, 1,
+		treeNode = smgr->addAnimatedMeshSceneNode(loadMesh("tree00.b3d"), NULL, 1,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
+		portalNode = smgr->addAnimatedMeshSceneNode(loadMesh("portal.b3d"), NULL, 2, 
+			core::vector3df(10, 10, 0), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
 		floorNode = smgr->addCubeSceneNode(2.0f, NULL, 0,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
 
@@ -87,10 +81,20 @@ namespace Platformer
 		sceneNodes.push_back(sunController);
 		sceneNodes.push_back(floorNode);
 		sceneNodes.push_back(treeNode);
+		sceneNodes.push_back(portalNode);
 
 		treeNode->setMaterialFlag(video::EMF_LIGHTING, true);
 		treeNode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 		treeNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
+
+		portalNode->setMaterialFlag(video::EMF_LIGHTING, true);
+
+		portalNode->setJointMode(scene::EJUOR_CONTROL);
+		portalNode->setDebugDataVisible(scene::EDS_SKELETON);
+
+		portalNode->setFrameLoop(0, 95);
+		portalNode->setAnimationSpeed(24);
+		portalNode->setCurrentFrame(24);
 
 		floorNode->setMaterialFlag(video::EMF_LIGHTING, true);
 		floorNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
@@ -99,7 +103,8 @@ namespace Platformer
 		floorNode->getMaterial(0).AmbientColor.set(0xff404040);
 		floorNode->getMaterial(0).Shininess = 0;
 
-		scene::ITriangleSelector *floorNodeSelector = smgr->createOctreeTriangleSelector(((scene::IMeshSceneNode *)floorNode)->getMesh(), floorNode, 12);
+		scene::ITriangleSelector *floorNodeSelector = smgr->createOctreeTriangleSelector(
+			((scene::IMeshSceneNode *)floorNode)->getMesh(), floorNode, 12);
 
 		floorNode->setTriangleSelector(floorNodeSelector);
 
@@ -140,6 +145,19 @@ namespace Platformer
 			camera->addAnimator(collider);
 			collider->drop();
 		}
+	}
+
+	scene::IAnimatedMesh* Platformer::loadMesh(char * path)
+	{
+		scene::IAnimatedMesh *mesh = smgr->getMesh(path);
+
+		if (!mesh)
+		{
+			device->drop();
+			exit(1);
+		}
+
+		return mesh;
 	}
 
 	void Platformer::drawBoundingBoxes()
