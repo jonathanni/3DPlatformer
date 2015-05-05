@@ -72,18 +72,21 @@ namespace Platformer
 
 		treeNode = smgr->addAnimatedMeshSceneNode(loadMesh("tree00.b3d"), NULL, 1,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
-		portalNode = smgr->addAnimatedMeshSceneNode(loadMesh("portal.b3d"), NULL, 2, 
+		portalNode = smgr->addAnimatedMeshSceneNode(loadMesh("portal.b3d"), NULL, 2,
 			core::vector3df(10, 10, 0), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
 		floorNode = smgr->addCubeSceneNode(2.0f, NULL, 0,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
+		fields.push_back(new GravityBox(-10000, 10000, -10000, 10000, -10000, 10000));
+		core::vector3d<float> downVector;
+		downVector.set(0, -9.8, 0);
+		((GravityBox*)fields.at(0))->setDownVector(downVector);
 
+		velocity.set(0, 0, 0);
 		sceneNodes.push_back(sun);
 		sceneNodes.push_back(sunController);
 		sceneNodes.push_back(floorNode);
 		sceneNodes.push_back(treeNode);
 		sceneNodes.push_back(portalNode);
-
-		velocity.set(0, 0, 0);
 
 		treeNode->setMaterialFlag(video::EMF_LIGHTING, true);
 		treeNode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
@@ -139,7 +142,7 @@ namespace Platformer
 
 			scene::ISceneNodeAnimatorCollisionResponse * collider =
 				smgr->createCollisionResponseAnimator(metaSelector, camera,
-				core::vector3df(20, 60, 20), core::vector3df(0, -9.8f, 0), core::vector3df(0, 1.6f, 0));
+				core::vector3df(20, 60, 20), core::vector3df(0, 0, 0), core::vector3df(0, 0, 0));
 
 			metaSelector->drop();
 			floorNodeSelector->drop();
@@ -190,31 +193,29 @@ namespace Platformer
 		while (isUpdate)
 		{
 			isFloor = camera->getPosition().Y <= 0;
-			if (isFloor)
-			{
-				velocity.set(0, 0, 0);
-
+			
+			
+			if (isFloor){
+				//velocity.set(0, 0, 0);
 			}
 			core::vector3d<float> totalDownVector;
 			totalDownVector.set(0, 0, 0);
-
+			
 			this_thread::sleep_for(chrono::milliseconds(PLATFORMER_TIME_CONSTANT));
-			//for (IGravityField i : fields){
+			
 			for (IGravityField *i : fields){
 				totalDownVector = totalDownVector + i->calcDownVector(camera->getPosition());
 
 			}
 			velocity += totalDownVector;
-			core::vector3d<float> up(0, 100, 0);
-			if (isFloor){
-				if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE))
-				{
-					velocity = (up)+(1 / PLATFORMER_TIME_CONSTANT)*totalDownVector;
+			core::vector3d<float> up = totalDownVector.normalize() * core::vector3d<float>(0, -20, 0);
+			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE))
+			{
+				velocity = (up)+(1 / PLATFORMER_TIME_CONSTANT)*totalDownVector;
 
-				}
-				
 			}
 			camera->setPosition(camera->getPosition() + velocity);
+			
 		}
 	}
 
