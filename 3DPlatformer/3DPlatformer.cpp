@@ -73,7 +73,7 @@ namespace Platformer
 		treeNode = smgr->addAnimatedMeshSceneNode(loadMesh("tree00.b3d"), NULL, 1,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
 		portalNode = smgr->addAnimatedMeshSceneNode(loadMesh("portal.b3d"), NULL, 2, 
-			core::vector3df(10, 10, 0), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
+			core::vector3df(100, 10, 100), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
 		floorNode = smgr->addCubeSceneNode(2.0f, NULL, 0,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
 
@@ -94,9 +94,18 @@ namespace Platformer
 		portalNode->setJointMode(scene::EJUOR_CONTROL);
 		portalNode->setDebugDataVisible(scene::EDS_SKELETON);
 
-		portalNode->setFrameLoop(0, 95);
-		portalNode->setAnimationSpeed(24);
-		portalNode->setCurrentFrame(24);
+		{
+			scene::ISceneNodeAnimator *rot =
+				smgr->createRotationAnimator(core::vector3df(0, 1.0f, 0)), 
+				*trans = smgr->createFlyStraightAnimator(portalNode->getPosition(),
+				                                         portalNode->getPosition() + core::vector3df(0, 50, 0),
+														 2000, true, true);
+			portalNode->addAnimator(rot);
+			portalNode->addAnimator(trans);
+			
+			rot->drop();
+			trans->drop();
+		}
 
 		floorNode->setMaterialFlag(video::EMF_LIGHTING, true);
 		floorNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
@@ -133,13 +142,13 @@ namespace Platformer
 
 			camera = smgr->addCameraSceneNodeFPS(0, 100, 0.4f, -1, keyMap, 6, true, 3.0f);
 
-			camera->setPosition(core::vector3df(900, 1000, 900));
+			camera->setPosition(core::vector3df(900, 100, 900));
 			camera->setTarget(core::vector3df(0, 0, 0));
 			camera->setFarValue(5000);
 
 			scene::ISceneNodeAnimatorCollisionResponse * collider =
 				smgr->createCollisionResponseAnimator(metaSelector, camera,
-				core::vector3df(20, 60, 20), core::vector3df(0, -9.8f, 0), core::vector3df(0, 1.6f, 0));
+				core::vector3df(20, 60, 20), core::vector3df(0, 0, 0), core::vector3df(0, 0, 0));
 
 			metaSelector->drop();
 			floorNodeSelector->drop();
