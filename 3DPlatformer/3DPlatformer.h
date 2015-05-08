@@ -4,6 +4,7 @@
 #include "IGravityField.h"
 
 #define PLATFORMER_TIME_CONSTANT 20
+#define PLATFORMER_RAY_LIMIT 10000
 
 namespace Platformer{
 
@@ -64,7 +65,9 @@ namespace Platformer{
 		bool success = true;
 	private:
 		scene::IAnimatedMesh *loadMesh(char *);
+		core::triangle3df getSurfaceTri(core::vector3df, core::vector3df);
 
+		// For Debug
 		void drawBoundingBoxes(void);
 
 		video::IVideoDriver *driver;
@@ -72,6 +75,7 @@ namespace Platformer{
 		gui::IGUIEnvironment *guienv;
 
 		scene::ICameraSceneNode *camera;
+		scene::ISceneNodeAnimatorCollisionResponse * collider;
 		scene::IAnimatedMeshSceneNode *treeNode, *portalNode;
 		scene::ISceneNode *floorNode;
 		scene::ILightSceneNode *sun;
@@ -84,7 +88,7 @@ namespace Platformer{
 		std::thread *updateThread;
 		
 		vector<IGravityField*> fields;
-		core::vector3d<float> velocity;
+		core::vector3df velocity;
 	};
 
 	bool check(Platformer *);

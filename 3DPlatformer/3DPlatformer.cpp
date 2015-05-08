@@ -10,6 +10,8 @@
 #include <thread>
 #include <vector>
 
+#include <assert.h>
+
 #include <irrlicht.h>
 
 #include "3DPlatformer.h"
@@ -22,6 +24,13 @@
 
 namespace Platformer
 {
+	enum NodeType
+	{
+		CAMERA = 0,
+		LIGHT = 1,
+		PICKABLE = 2
+	};
+
 	Platformer::Platformer()
 	{
 		video::E_DRIVER_TYPE driverType;
@@ -62,26 +71,33 @@ namespace Platformer
 		smgr->setAmbientLight(video::SColorf(0x00c0c0c0));
 
 		sun = smgr->addLightSceneNode();
+		sun->setID(LIGHT);
 		sun->getLightData().Type = video::ELT_DIRECTIONAL;
 
 		sunController = smgr->addEmptySceneNode();
+		sunController->setID(LIGHT);
+
 		sun->setPosition(core::vector3df(0, 0, 1));
 		sun->setParent(sunController);
 
 		sunController->setRotation(core::vector3df(-90, -90, 0));
 
-		treeNode = smgr->addAnimatedMeshSceneNode(loadMesh("tree00.b3d"), NULL, 1,
+		treeNode = smgr->addAnimatedMeshSceneNode(loadMesh("tree00.b3d"), NULL, PICKABLE,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
-		portalNode = smgr->addAnimatedMeshSceneNode(loadMesh("portal.b3d"), NULL, 2, 
+		portalNode = smgr->addAnimatedMeshSceneNode(loadMesh("portal.b3d"), NULL, PICKABLE,
 			core::vector3df(100, 10, 100), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
-		floorNode = smgr->addCubeSceneNode(2.0f, NULL, 0,
+		floorNode = smgr->addCubeSceneNode(2.0f, NULL, PICKABLE,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
+
 		fields.push_back(new GravityBox(-10000, 10000, -10000, 10000, -10000, 10000));
+
 		core::vector3d<float> downVector;
 		downVector.set(0, -9.8, 0);
+
 		((GravityBox*)fields.at(0))->setDownVector(downVector);
 
 		velocity.set(0, 0, 0);
+
 		sceneNodes.push_back(sun);
 		sceneNodes.push_back(sunController);
 		sceneNodes.push_back(floorNode);
@@ -143,14 +159,13 @@ namespace Platformer
 			keyMap[5].Action = EKA_CROUCH;
 			keyMap[5].KeyCode = KEY_LSHIFT;
 
-			camera = smgr->addCameraSceneNodeFPS(0, 100, 0.4f, -1, keyMap, 6, true, 3.0f);
+			camera = smgr->addCameraSceneNodeFPS(0, 100, 0.4f, CAMERA, keyMap, 6, true, 3.0f);
 
 			camera->setPosition(core::vector3df(900, 100, 900));
 			camera->setTarget(core::vector3df(0, 0, 0));
 			camera->setFarValue(5000);
 
-			scene::ISceneNodeAnimatorCollisionResponse * collider =
-				smgr->createCollisionResponseAnimator(metaSelector, camera,
+			collider = smgr->createCollisionResponseAnimator(metaSelector, camera,
 				core::vector3df(20, 60, 20), core::vector3df(0, 0, 0), core::vector3df(0, 0, 0));
 
 			metaSelector->drop();
@@ -172,6 +187,19 @@ namespace Platformer
 		}
 
 		return mesh;
+	}
+
+	core::triangle3df Platformer::getSurfaceTri(core::vector3df pos, core::vector3df dir)
+	{
+		core::line3df ray = core::line3df(pos, pos + dir * PLATFORMER_RAY_LIMIT);
+
+		core::vector3df out;
+		core::triangle3df outTri;
+
+		smgr->getSceneCollisionManager()->
+			getSceneNodeAndCollisionPointFromRay(ray, out, outTri, PICKABLE);
+
+		return outTri;
 	}
 
 	void Platformer::drawBoundingBoxes()
@@ -201,8 +229,7 @@ namespace Platformer
 	{
 		while (isUpdate)
 		{
-			isFloor = camera->getPosition().Y <= 0;
-			
+			isFloor = camera->getPosition().Y <= 0 || collider->collisionOccurred();
 
 			if (isFloor){
 				//velocity.set(0, 0, 0);
@@ -211,18 +238,17 @@ namespace Platformer
 			totalDownVector.set(0, 0, 0);
 
 			this_thread::sleep_for(chrono::milliseconds(PLATFORMER_TIME_CONSTANT));
-			
-			for (IGravityField *i : fields){
+
+			for (IGravityField *i : fields)
 				totalDownVector = totalDownVector + i->calcDownVector(camera->getPosition());
 
-			}
 			velocity += totalDownVector;
-			core::vector3d<float> up = totalDownVector.normalize() * core::vector3d<float>(0, -20, 0);
-				if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE))
-				{
-					velocity = (up)+(1 / PLATFORMER_TIME_CONSTANT)*totalDownVector;
+			core::vector3df up = getSurfaceTri(camera->getPosition(), totalDownVector.normalize())
+									.getNormal().normalize();
+			
+			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE) && isFloor)
+				velocity = up + (1 / PLATFORMER_TIME_CONSTANT) * totalDownVector;
 
-				}
 			camera->setPosition(camera->getPosition() + velocity);
 			
 		}
