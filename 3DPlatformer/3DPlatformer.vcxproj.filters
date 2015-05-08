@@ -36,6 +36,9 @@
     <ClInclude Include="GravityBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MyEventListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

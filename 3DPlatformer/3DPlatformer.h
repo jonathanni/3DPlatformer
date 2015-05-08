@@ -23,6 +23,7 @@ namespace Platformer{
 		void stop(void);
 
 		irr::IrrlichtDevice *device;
+
 		class MyEventReceiver : public IEventReceiver
 		{
 		public:
@@ -61,6 +62,7 @@ namespace Platformer{
 		private:
 			bool KeyIsDown[KEY_KEY_CODES_COUNT];
 		};
+
 		bool success = true;
 	private:
 		scene::IAnimatedMesh *loadMesh(char *);
@@ -74,6 +76,7 @@ namespace Platformer{
 		scene::ICameraSceneNode *camera;
 		scene::IAnimatedMeshSceneNode *treeNode, *portalNode;
 		scene::ISceneNode *floorNode;
+		scene::ISceneNode *gravityBox;
 		scene::ILightSceneNode *sun;
 		scene::ISceneNode *sunController;
 

@@ -3,7 +3,7 @@
 
 #include <irrlicht.h>
 #include <math.h>
-#define GRAVITY 6.67*pow(10.0, -11.0)
+#define GRAVITY 6.67*pow(10.0, -5.0)
 namespace Platformer
 
 {

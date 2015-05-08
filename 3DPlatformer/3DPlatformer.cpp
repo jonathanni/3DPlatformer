@@ -14,6 +14,7 @@
 
 #include "3DPlatformer.h"
 #include "GravityBox.h"
+#include "MassObject.h"
 
 #ifdef _IRR_WINDOWS_
 #pragma comment(lib, "Irrlicht.lib")
@@ -35,7 +36,7 @@ namespace Platformer
 		device =
 			irr::createDevice(driverType, core::dimension2d<u32>(800, 600), 16,
 			false, true, false, NULL);
-
+		
 		if (!device)
 			success = false;
 
@@ -76,12 +77,16 @@ namespace Platformer
 			core::vector3df(10, 10, 0), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
 		floorNode = smgr->addCubeSceneNode(2.0f, NULL, 0,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
+		
 		fields.push_back(new GravityBox(-10000, 10000, -10000, 10000, -10000, 10000));
-		core::vector3d<float> downVector;
-		downVector.set(0, -9.8, 0);
-		((GravityBox*)fields.at(0))->setDownVector(downVector);
+		fields.push_back(new MassObject(new float[3]{900, 400, 900}, 100000));
 
+		core::vector3d<float> downVector;
+		downVector.set(0, 0, 0);
+		((GravityBox*)fields.at(0))->setDownVector(downVector);
 		velocity.set(0, 0, 0);
+		
+		
 		sceneNodes.push_back(sun);
 		sceneNodes.push_back(sunController);
 		sceneNodes.push_back(floorNode);
@@ -196,7 +201,7 @@ namespace Platformer
 			
 			
 			if (isFloor){
-				//velocity.set(0, 0, 0);
+				velocity.set(0, 0, 0);
 			}
 			core::vector3d<float> totalDownVector;
 			totalDownVector.set(0, 0, 0);
@@ -204,7 +209,13 @@ namespace Platformer
 			this_thread::sleep_for(chrono::milliseconds(PLATFORMER_TIME_CONSTANT));
 			
 			for (IGravityField *i : fields){
-				totalDownVector = totalDownVector + i->calcDownVector(camera->getPosition());
+				core::vector3d<float> add = i->calcDownVector(camera->getPosition());
+				if (add.equals(core::vector3d<float>(-365, -365, -365))){
+					totalDownVector.set(0, 0, 0);
+					velocity.set(0, 0, 0);
+					break;
+				}
+				totalDownVector = totalDownVector +add;
 
 			}
 			velocity += totalDownVector;
@@ -214,6 +225,8 @@ namespace Platformer
 				velocity = (up)+(1 / PLATFORMER_TIME_CONSTANT)*totalDownVector;
 
 			}
+		
+			//device->getEventReceiver()->OnEvent()
 			camera->setPosition(camera->getPosition() + velocity);
 			
 		}
