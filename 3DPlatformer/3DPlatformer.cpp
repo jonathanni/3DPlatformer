@@ -90,8 +90,8 @@ namespace Platformer
 		floorNode = smgr->addCubeSceneNode(2.0f, NULL, PICKABLE,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
 
-		fields.push_back(new GravityBox(-10000, 10000, -10000, 10000, -10000, 10000));
-		//fields.push_back(new MassObject(new float[3]{900, 400, 900}, 100000));
+		//fields.push_back(new GravityBox(-10000, 10000, -10000, 10000, -10000, 10000));
+		fields.push_back(new MassObject(new float[3]{900, 400, 900}, 100000));
 
 		core::vector3d<float> downVector;
 		downVector.set(0, 0, 0);
@@ -253,10 +253,10 @@ namespace Platformer
 			velocity += totalDownVector;
 			core::vector3df up = getSurfaceTri(camera->getPosition(), totalDownVector.normalize())
 									.getNormal().normalize();
-			
+			/*
 			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE) && isFloor)
 				velocity = up + (1 / PLATFORMER_TIME_CONSTANT) * totalDownVector;
-
+				*/
 		
 			//device->getEventReceiver()->OnEvent()
 			camera->setPosition(camera->getPosition() + velocity);
