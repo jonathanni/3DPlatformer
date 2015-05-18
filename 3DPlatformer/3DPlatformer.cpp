@@ -48,7 +48,7 @@ namespace Platformer
 		device =
 			irr::createDevice(driverType, core::dimension2d<u32>(800, 600), 16,
 			false, true, false, &spaceBarEvent);
-
+		
 		log = ofstream("debug.log");
 		
 		if (!device || !log.is_open())
@@ -103,7 +103,7 @@ namespace Platformer
 
 		((GravityBox*)fields.at(0))->setDownVector(downVector);
 		velocity.set(0, 0, 0);
-		
+
 		sceneNodes.push_back(sun);
 		sceneNodes.push_back(sunController);
 		sceneNodes.push_back(floorNode);
@@ -265,10 +265,10 @@ namespace Platformer
 				.getNormal().normalize() * PLATFORMER_JUMP_FORCE;
 
 			log << "***************************************************" << isFloor << endl;
-
+			
 			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE) && isFloor)
 				velocity = up + (1 / PLATFORMER_TIME_CONSTANT) * totalDownVector;
-		
+
 			//device->getEventReceiver()->OnEvent()
 			camera->setPosition(camera->getPosition() + velocity);
 			
