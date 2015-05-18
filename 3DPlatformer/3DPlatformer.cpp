@@ -91,7 +91,7 @@ namespace Platformer
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
 
 		fields.push_back(new GravityBox(-10000, 10000, -10000, 10000, -10000, 10000));
-		fields.push_back(new MassObject(new float[3]{900, 400, 900}, 100000));
+		//fields.push_back(new MassObject(new float[3]{900, 400, 900}, 100000));
 
 		core::vector3d<float> downVector;
 		downVector.set(0, 0, 0);
@@ -241,15 +241,15 @@ namespace Platformer
 
 			this_thread::sleep_for(chrono::milliseconds(PLATFORMER_TIME_CONSTANT));
 
-			for (IGravityField *i : fields)
+			for (IGravityField *i : fields){
 				core::vector3d<float> add = i->calcDownVector(camera->getPosition());
 				if (add.equals(core::vector3d<float>(-365, -365, -365))){
 					totalDownVector.set(0, 0, 0);
 					velocity.set(0, 0, 0);
 					break;
 				}
-				totalDownVector = totalDownVector +add;
-
+				totalDownVector = totalDownVector + add;
+			}
 			velocity += totalDownVector;
 			core::vector3df up = getSurfaceTri(camera->getPosition(), totalDownVector.normalize())
 									.getNormal().normalize();
