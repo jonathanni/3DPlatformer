@@ -47,7 +47,7 @@ namespace Platformer
 
 		device =
 			irr::createDevice(driverType, core::dimension2d<u32>(800, 600), 16,
-			false, true, false, &spaceBarEvent);
+			false, true, false, NULL);
 		
 		log = ofstream("debug.log");
 		
