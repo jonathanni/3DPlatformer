@@ -6,6 +6,7 @@
 #endif
 
 #include <iostream>
+#include <fstream>
 #include <chrono>
 #include <thread>
 #include <vector>
@@ -32,6 +33,8 @@ namespace Platformer
 		PICKABLE = 2
 	};
 
+	ofstream Platformer::log;
+
 	Platformer::Platformer()
 	{
 		video::E_DRIVER_TYPE driverType;
@@ -46,7 +49,9 @@ namespace Platformer
 			irr::createDevice(driverType, core::dimension2d<u32>(800, 600), 16,
 			false, true, false, NULL);
 		
-		if (!device)
+		log = ofstream("debug.log");
+		
+		if (!device || !log.is_open())
 			success = false;
 
 		sceneNodes = std::vector<scene::ISceneNode*>();
@@ -91,15 +96,15 @@ namespace Platformer
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
 
 		//fields.push_back(new GravityBox(-10000, 10000, -10000, 10000, -10000, 10000));
-		fields.push_back(new MassObject(new float[3]{900, 400, 900}, 100000));
+		fields.push_back(new GravityBox(-10000, 10000, -10000, 10000, -10000, 10000));
+		//fields.push_back(new MassObject(new float[3]{0, 0, 0}, 100000));
 
 		core::vector3d<float> downVector;
-		downVector.set(0, 0, 0);
+		downVector.set(0, -1, 0);
 
 		((GravityBox*)fields.at(0))->setDownVector(downVector);
 		velocity.set(0, 0, 0);
 
-		
 		sceneNodes.push_back(sun);
 		sceneNodes.push_back(sunController);
 		sceneNodes.push_back(floorNode);
@@ -163,7 +168,7 @@ namespace Platformer
 
 			camera = smgr->addCameraSceneNodeFPS(0, 100, 0.4f, CAMERA, keyMap, 6, true, 3.0f);
 
-			camera->setPosition(core::vector3df(900, 100, 900));
+			camera->setPosition(core::vector3df(900, 900, 900));
 			camera->setTarget(core::vector3df(0, 0, 0));
 			camera->setFarValue(5000);
 
@@ -233,31 +238,37 @@ namespace Platformer
 		{
 			isFloor = camera->getPosition().Y <= 0 || collider->collisionOccurred();
 
-			if (isFloor){
+			if (isFloor)
 				velocity.set(0, 0, 0);
-			}
+
 			core::vector3d<float> totalDownVector;
 			totalDownVector.set(0, 0, 0);
 
 			this_thread::sleep_for(chrono::milliseconds(PLATFORMER_TIME_CONSTANT));
 
-			for (IGravityField *i : fields){
+			for (IGravityField *i : fields)
+			{
 				core::vector3d<float> add = i->calcDownVector(camera->getPosition());
-				if (add.equals(core::vector3d<float>(-365, -365, -365))){
+
+				// is NaN
+				if (!add.equals(add))
+				{
 					totalDownVector.set(0, 0, 0);
 					velocity.set(0, 0, 0);
 					break;
 				}
+
 				totalDownVector = totalDownVector + add;
 			}
+
 			velocity += totalDownVector;
 			core::vector3df up = getSurfaceTri(camera->getPosition(), totalDownVector.normalize())
-									.getNormal().normalize();
+				.getNormal().normalize() * PLATFORMER_JUMP_FORCE;
 			/*
+			log << "***************************************************" << isFloor << endl;
 			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE) && isFloor)
 				velocity = up + (1 / PLATFORMER_TIME_CONSTANT) * totalDownVector;
 				*/
-		
 			//device->getEventReceiver()->OnEvent()
 			camera->setPosition(camera->getPosition() + velocity);
 			
@@ -282,6 +293,8 @@ namespace Platformer
 		isUpdate = false;
 
 		updateThread->join();
+
+		log.close();
 
 		device->closeDevice();
 		device->run();
