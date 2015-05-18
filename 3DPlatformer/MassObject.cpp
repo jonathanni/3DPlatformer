@@ -9,7 +9,7 @@ namespace Platformer
 		if ((cameraPos.X < position.X + 100 && cameraPos.X > position.X - 100) &&
 			(cameraPos.Y < position.Y + 100 && cameraPos.Y > position.Y - 100) &&
 			(cameraPos.Z < position.Z + 100 && cameraPos.Z > position.Z - 100)) {
-			return core::vector3d<float>(-365, -365, -365);
+			return core::vector3d<float>(NAN, NAN, NAN);
 		}
 		
 		core::vector3d<float> downVector;

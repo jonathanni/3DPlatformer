@@ -5,6 +5,7 @@
 
 #define PLATFORMER_TIME_CONSTANT 20
 #define PLATFORMER_RAY_LIMIT 10000
+#define PLATFORMER_JUMP_FORCE 10
 
 namespace Platformer{
 
@@ -33,6 +34,7 @@ namespace Platformer{
 				if (event.EventType == irr::EET_KEY_INPUT_EVENT)
 				{
 					KeyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
+					
 					{
 						if (event.EventType == irr::EET_KEY_INPUT_EVENT&&!event.KeyInput.PressedDown)
 							switch (event.KeyInput.Key)
@@ -69,8 +71,11 @@ namespace Platformer{
 		scene::IAnimatedMesh *loadMesh(char *);
 		core::triangle3df getSurfaceTri(core::vector3df, core::vector3df);
 
-		// For Debug
+		// For Debug //
 		void drawBoundingBoxes(void);
+
+		static ofstream log;
+		//           //
 
 		video::IVideoDriver *driver;
 		scene::ISceneManager *smgr;
