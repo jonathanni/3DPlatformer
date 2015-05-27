@@ -47,7 +47,7 @@ namespace Platformer
 
 		device =
 			irr::createDevice(driverType, core::dimension2d<u32>(800, 600), 16,
-			false, true, false, NULL);
+			false, true, false, &spaceBarEvent);
 		
 		log = ofstream("debug.log");
 		
@@ -264,11 +264,24 @@ namespace Platformer
 			velocity += totalDownVector;
 			core::vector3df up = getSurfaceTri(camera->getPosition(), totalDownVector.normalize())
 				.getNormal().normalize() * PLATFORMER_JUMP_FORCE;
-			/*
-			log << "***************************************************" << isFloor << endl;
-			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE) && isFloor)
+			
+		//	log << "***************************************************" << isFloor << endl;
+		irr:core::matrix4 mat = camera->getRelativeTransformation();
+			
+			core::vector3d<float> lookat = core::vector3df(mat[8], mat[9], mat[10]);
+			core::vector3d<float> leftvector = core::vector3df(mat[0], mat[1], mat[2]);
+			lookat.normalize();
+			leftvector.normalize();
+			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE))
 				velocity = up + (1 / PLATFORMER_TIME_CONSTANT) * totalDownVector;
-				*/
+			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_W))
+				camera->setPosition(camera->getPosition() + lookat*PLATFORMER_SPEED);
+			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_S))
+				camera->setPosition(camera->getPosition() + -lookat*PLATFORMER_SPEED);
+			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_A))
+				camera->setPosition(camera->getPosition() + -leftvector * PLATFORMER_SPEED);
+			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_D))
+				camera->setPosition(camera->getPosition() + leftvector * PLATFORMER_SPEED);
 			//device->getEventReceiver()->OnEvent()
 			camera->setPosition(camera->getPosition() + velocity);
 			

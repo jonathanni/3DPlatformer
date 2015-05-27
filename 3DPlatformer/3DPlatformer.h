@@ -2,10 +2,11 @@
 #define _3DPLATFORMER_H
 
 #include "IGravityField.h"
-
+#include "MyEventListener.h"
 #define PLATFORMER_TIME_CONSTANT 20
 #define PLATFORMER_RAY_LIMIT 10000
-#define PLATFORMER_JUMP_FORCE 10
+#define PLATFORMER_JUMP_FORCE 20
+#define PLATFORMER_SPEED 30
 
 namespace Platformer{
 
@@ -51,7 +52,7 @@ namespace Platformer{
 		scene::ISceneNode *gravityBox;
 		scene::ILightSceneNode *sun;
 		scene::ISceneNode *sunController;
-
+		MyEventReceiver spaceBarEvent;
 		bool isFloor = false, isUpdate = false;
 		
 		std::vector<scene::ISceneNode*> sceneNodes;
