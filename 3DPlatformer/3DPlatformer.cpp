@@ -79,7 +79,7 @@ namespace Platformer
 		sun = smgr->addLightSceneNode();
 		sun->setID(LIGHT);
 		sun->getLightData().Type = video::ELT_DIRECTIONAL;
-
+		
 		sunController = smgr->addEmptySceneNode();
 		sunController->setID(LIGHT);
 
@@ -92,12 +92,13 @@ namespace Platformer
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
 		portalNode = smgr->addAnimatedMeshSceneNode(loadMesh("portal.b3d"), NULL, PICKABLE,
 			core::vector3df(100, 10, 100), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
-		floorNode = smgr->addCubeSceneNode(2.0f, NULL, PICKABLE,
-			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
-
+		/*floorNode = smgr->addCubeSceneNode(2.0f, NULL, PICKABLE,
+			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));*/
+		floorNode = smgr->addSphereSceneNode(500, 64, NULL, PICKABLE, core::vector3df(0, -250, 0));
+		
 		//fields.push_back(new GravityBox(-10000, 10000, -10000, 10000, -10000, 10000));
-		fields.push_back(new GravityBox(-10000, 10000, -10000, 10000, -10000, 10000));
-		//fields.push_back(new MassObject(new float[3]{0, 0, 0}, 100000));
+		//fields.push_back(new GravityBox(-10000, 10000, -10000, 10000, -10000, 10000));
+		fields.push_back(new MassObject(new float[3]{0, 0, 0}, 1000000));
 
 		core::vector3d<float> downVector;
 		downVector.set(0, -1, 0);
@@ -146,7 +147,7 @@ namespace Platformer
 		floorNode->setTriangleSelector(floorNodeSelector);
 
 		scene::IMetaTriangleSelector *metaSelector = smgr->createMetaTriangleSelector();
-
+		cameraPlane = core::vector3df(1, 0, 0);
 		metaSelector->addTriangleSelector(floorNodeSelector);
 
 		{
@@ -165,7 +166,7 @@ namespace Platformer
 			keyMap[4].KeyCode = KEY_SPACE;
 			keyMap[5].Action = EKA_CROUCH;
 			keyMap[5].KeyCode = KEY_LSHIFT;
-
+	
 			camera = smgr->addCameraSceneNodeFPS(0, 100, 0.4f, CAMERA, keyMap, 6, true, 3.0f);
 
 			camera->setPosition(core::vector3df(900, 900, 900));
@@ -180,6 +181,11 @@ namespace Platformer
 
 			camera->addAnimator(collider);
 			collider->drop();
+			
+			cameraController = smgr->addEmptySceneNode();
+			cameraController->setPosition(camera->getPosition());
+
+			camera->setParent(cameraController);
 		}
 	}
 
@@ -245,23 +251,41 @@ namespace Platformer
 			totalDownVector.set(0, 0, 0);
 
 			this_thread::sleep_for(chrono::milliseconds(PLATFORMER_TIME_CONSTANT));
-
+			core::vector3d<float> add;
 			for (IGravityField *i : fields)
 			{
-				core::vector3d<float> add = i->calcDownVector(camera->getPosition());
+				add = i->calcDownVector(camera->getPosition());
+
+				assert(core::vector3d<float>(NAN, NAN, NAN) != core::vector3d<float>(NAN, NAN, NAN));
 
 				// is NaN
 				if (!add.equals(add))
 				{
-					totalDownVector.set(0, 0, 0);
+					//totalDownVector.set(0, 0, 0);
 					velocity.set(0, 0, 0);
 					break;
 				}
 
 				totalDownVector = totalDownVector + add;
 			}
+			
+			//Included this check so that if the ground is being hit, the downVector still is being calculated (so its not 0), but doesnt affect the velocity of the object
+			if (add.equals(add)){
+				velocity += totalDownVector;
+			}
+			
+		
+			
+			core::vector3df normalizedDownVector = totalDownVector.normalize();
+			core::CMatrix4<float> rotateMatrix;
+			rotateMatrix.buildRotateFromTo(cameraPlane, normalizedDownVector);
 
-			velocity += totalDownVector;
+			core::vector3df rotateVec = cameraPlane;
+			
+			rotateMatrix.transformVect(rotateVec);
+			log << rotateVec.X << " " << rotateVec.Y << " " << rotateVec.Z << endl;
+			cameraController->setRotation(rotateVec);
+			cameraPlane = rotateVec;
 			core::vector3df up = getSurfaceTri(camera->getPosition(), totalDownVector.normalize())
 				.getNormal().normalize() * PLATFORMER_JUMP_FORCE;
 			

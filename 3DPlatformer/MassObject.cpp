@@ -6,14 +6,15 @@ namespace Platformer
 	using namespace irr;
 	core::vector3d<float> MassObject::calcDownVector(core::vector3d<float> cameraPos)
 	{ 
-		if ((cameraPos.X < position.X + 100 && cameraPos.X > position.X - 100) &&
-			(cameraPos.Y < position.Y + 100 && cameraPos.Y > position.Y - 100) &&
-			(cameraPos.Z < position.Z + 100 && cameraPos.Z > position.Z - 100)) {
+		//core::vector3d<float> difference = cameraPos - position;
+		core::vector3d<float> downVector;
+
+		downVector = cameraPos - position;
+		if (downVector.getLengthSQ() <= 250000){
 			return core::vector3d<float>(NAN, NAN, NAN);
 		}
 		
-		core::vector3d<float> downVector;
-		
+	
 		downVector = cameraPos - position;
 		
 		float force = mass/downVector.getLengthSQ();

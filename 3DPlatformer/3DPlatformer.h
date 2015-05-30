@@ -51,9 +51,10 @@ namespace Platformer{
 		scene::ISceneNode *floorNode;
 		scene::ISceneNode *gravityBox;
 		scene::ILightSceneNode *sun;
-		scene::ISceneNode *sunController;
+		scene::ISceneNode *sunController, *cameraController;
 		MyEventReceiver spaceBarEvent;
 		bool isFloor = false, isUpdate = false;
+		core::vector3df cameraPlane;
 		
 		std::vector<scene::ISceneNode*> sceneNodes;
 		std::thread *updateThread;
