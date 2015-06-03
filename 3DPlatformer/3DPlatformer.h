@@ -9,7 +9,7 @@
 #define PLATFORMER_SPEED 30
 
 namespace Platformer{
-
+	
 	using namespace irr;
 	using namespace std;
 
@@ -38,7 +38,7 @@ namespace Platformer{
 		// For Debug //
 		void drawBoundingBoxes(void);
 
-		static ofstream log;
+		
 		//           //
 
 		video::IVideoDriver *driver;
@@ -55,10 +55,11 @@ namespace Platformer{
 		MyEventReceiver spaceBarEvent;
 		bool isFloor = false, isUpdate = false;
 		core::vector3df cameraPlane;
-		
+		core::vector3df normalizedDownVector;
+		core::vector3df temp;
 		std::vector<scene::ISceneNode*> sceneNodes;
 		std::thread *updateThread;
-		
+		static ofstream log;
 		vector<IGravityField*> fields;
 		core::vector3df velocity;
 	};

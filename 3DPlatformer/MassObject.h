@@ -13,6 +13,7 @@ namespace Platformer
 
 	public:
 		core::vector3d<float> calcDownVector(core::vector3d<float>);
+		core::vector3d<float> calcDownVector1(core::vector3d<float>);
 		MassObject(float[3], float);
 	};
 }

@@ -13,6 +13,8 @@ namespace Platformer
 	public:
 		
 		virtual core::vector3d<float> calcDownVector(core::vector3d<float>) = 0;
+
+		virtual core::vector3d<float> calcDownVector1(core::vector3d<float>) = 0;
 	};
 
 }
