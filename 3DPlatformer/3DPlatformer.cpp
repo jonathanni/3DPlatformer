@@ -49,7 +49,7 @@ namespace Platformer
 
 		device =
 			irr::createDevice(driverType, core::dimension2d<u32>(800, 600), 16,
-			false, true, false, NULL);
+			false, true, false, &spaceBarEvent);
 		
 		log = ofstream("debug.log");
 		
@@ -108,7 +108,7 @@ namespace Platformer
 
 		((GravityBox*)fields.at(0))->setDownVector(core::vector3d<float>(0, -1, 0));
 		((GravityBox*)fields.at(1))->setDownVector(core::vector3d<float>(0, 0, 1));
-		
+
 		velocity.set(0, 0, 0);
 
 		sceneNodes.push_back(sun);
@@ -134,7 +134,7 @@ namespace Platformer
 				*trans = smgr->createFlyStraightAnimator(portalNode->getPosition(),
 				                                         portalNode->getPosition() + core::vector3df(0, 50, 0),
 														 2000, true, true);
-			portalNode->addAnimator(rot);                                                                                            
+			portalNode->addAnimator(rot);
 			portalNode->addAnimator(trans);
 			
 			rot->drop();
@@ -168,7 +168,7 @@ namespace Platformer
 		levelNode->setTriangleSelector(levelNodeSelector);
 
 		scene::IMetaTriangleSelector *metaSelector = smgr->createMetaTriangleSelector();
-
+		cameraPlane = core::vector3df(1, 0, 0);
 		metaSelector->addTriangleSelector(floorNodeSelector);
 		metaSelector->addTriangleSelector(levelNodeSelector);
 
@@ -189,6 +189,8 @@ namespace Platformer
 			keyMap[5].Action = EKA_CROUCH;
 			keyMap[5].KeyCode = KEY_LSHIFT;
 
+			//camera = smgr->addCameraSceneNode(0, core::vector3df(1000, 1000, 1000), core::vector3df(0, -100, 0), -1, true);
+
 			camera = smgr->addCameraSceneNodeFPS(0, 100, 0.4f, CAMERA, keyMap, 6, true, 3.0f);
 
 			camera->setPosition(core::vector3df(-870, 400, 760));
@@ -204,6 +206,12 @@ namespace Platformer
 
 			camera->addAnimator(collider);
 			collider->drop();
+			
+			//cameraController = smgr->addEmptySceneNode();
+			//cameraController->setPosition(camera->getPosition());
+			//cameraController->setRotation(camera->getRotation());
+			//camera->setParent(cameraController);
+			//cameraController->setRotation(cameraPlane);
 		}
 	}
 
@@ -269,39 +277,72 @@ namespace Platformer
 	{
 		while (isUpdate)
 		{
-			isFloor = camera->getPosition().Y <= 0 || collider->collisionOccurred();
 
-			if (isFloor)
-				velocity.set(0, 0, 0);
-
+			bool isFloor = true;
 			core::vector3d<float> totalDownVector;
 			totalDownVector.set(0, 0, 0);
 
 			this_thread::sleep_for(chrono::milliseconds(PLATFORMER_TIME_CONSTANT));
+			core::vector3d<float> add, add1;
 
 			for (IGravityField *i : fields)
 			{
-				core::vector3d<float> add = i->calcDownVector(camera->getPosition());
-
+				add = i->calcDownVector(camera->getPosition());
+				add1 = i->calcDownVector1(camera->getPosition());
+				assert(core::vector3d<float>(NAN, NAN, NAN) != core::vector3d<float>(NAN, NAN, NAN));
+				totalDownVector = totalDownVector + add1;
 				// is NaN
 				if (!add.equals(add))
 				{
-					totalDownVector.set(0, 0, 0);
+					//totalDownVector.set(0, 0, 0);
 					velocity.set(0, 0, 0);
+					isFloor = true;
 					break;
 				}
 
-				totalDownVector = totalDownVector + add;
+				
 			}
 
+			// Included this check so that if the ground is being hit, the downVector still is being
+			// calculated (so its not 0), but doesnt affect the velocity of the object
+			if (!isFloor){
+				velocity.set(0, 0, 0);
+			}
+			else{
 			velocity += totalDownVector;
+			}
+
+
+				core::vector3df upvec = camera->getUpVector();
+				normalizedDownVector = totalDownVector.normalize();
+				if (normalizedDownVector != temp){
+					
+					temp = normalizedDownVector;
+					camera->setUpVector(-normalizedDownVector);
+
+				}
 			core::vector3df up = getSurfaceTri(camera->getPosition(), totalDownVector.normalize())
 				.getNormal().normalize() * PLATFORMER_JUMP_FORCE;
-			/*
-			log << "***************************************************" << isFloor << endl;
-			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE) && isFloor)
+				
+					//	log << "***************************************************" << isFloor << endl;
+
+		irr:core::matrix4 mat = camera->getRelativeTransformation();
+			
+			core::vector3d<float> lookat = core::vector3df(mat[8], mat[9], mat[10]);
+			core::vector3d<float> leftvector = core::vector3df(mat[0], mat[1], mat[2]);
+			core::vector3df dir = -normalizedDownVector.crossProduct(lookat.crossProduct(-normalizedDownVector));
+			lookat.normalize();
+			leftvector.normalize();
+			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE))
 				velocity = up + (1 / PLATFORMER_TIME_CONSTANT) * totalDownVector;
-				*/
+			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_W))
+				camera->setPosition(camera->getPosition() + dir*PLATFORMER_SPEED);
+			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_S))
+				camera->setPosition(camera->getPosition() + -dir*PLATFORMER_SPEED);
+			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_A))
+				camera->setPosition(camera->getPosition() + -leftvector * PLATFORMER_SPEED);
+			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_D))
+				camera->setPosition(camera->getPosition() + leftvector * PLATFORMER_SPEED);
 			//device->getEventReceiver()->OnEvent()
 			camera->setPosition(camera->getPosition() + velocity);
 			

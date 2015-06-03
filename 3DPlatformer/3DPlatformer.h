@@ -2,13 +2,14 @@
 #define _3DPLATFORMER_H
 
 #include "IGravityField.h"
-
+#include "MyEventListener.h"
 #define PLATFORMER_TIME_CONSTANT 20
 #define PLATFORMER_RAY_LIMIT 10000
-#define PLATFORMER_JUMP_FORCE 10
+#define PLATFORMER_JUMP_FORCE 20
+#define PLATFORMER_SPEED 30
 
 namespace Platformer{
-
+	
 	using namespace irr;
 	using namespace std;
 
@@ -37,7 +38,7 @@ namespace Platformer{
 		// For Debug //
 		void drawBoundingBoxes(void);
 
-		static ofstream log;
+		
 		//           //
 
 		video::IVideoDriver *driver;
@@ -50,13 +51,15 @@ namespace Platformer{
 		scene::ISceneNode *floorNode;
 		scene::ISceneNode *gravityBox;
 		scene::ILightSceneNode *sun;
-		scene::ISceneNode *sunController;
-
+		scene::ISceneNode *sunController, *cameraController;
+		MyEventReceiver spaceBarEvent;
 		bool isFloor = false, isUpdate = false;
-		
+		core::vector3df cameraPlane;
+		core::vector3df normalizedDownVector;
+		core::vector3df temp;
 		std::vector<scene::ISceneNode*> sceneNodes;
 		std::thread *updateThread;
-		
+		static ofstream log;
 		vector<IGravityField*> fields;
 		core::vector3df velocity;
 	};
