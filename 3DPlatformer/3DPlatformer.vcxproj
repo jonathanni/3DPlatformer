@@ -99,12 +99,12 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="concrete00.png" />
-    <Image Include="dirt.png" />
     <Image Include="irrlicht.ico" />
     <Image Include="marble00.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Irrlicht.dll" />
+    <None Include="level00.b3d" />
     <None Include="portal.b3d" />
     <None Include="tree00.b3d" />
   </ItemGroup>

@@ -6,17 +6,17 @@ namespace Platformer
 	using namespace irr;
 	core::vector3d<float> GravityBox::calcDownVector(core::vector3d<float> cameraPos)
 	{
-		std::cout << "hi!" << std::endl;
-		if (cameraPos.X > minX && cameraPos.X < maxX && cameraPos.Y > minY && cameraPos.Y < maxY && cameraPos.Z > minZ && cameraPos.Z < maxZ){		
-			
+		if (cameraPos.X > bounds.MinEdge.X && cameraPos.X < bounds.MaxEdge.X && 
+			cameraPos.Y > bounds.MinEdge.Y && cameraPos.Y < bounds.MaxEdge.Y && 
+			cameraPos.Z > bounds.MinEdge.Z && cameraPos.Z < bounds.MaxEdge.Z)
 			return downVector;
-		
-		}
-		else{
-			core::vector3d<float> zero;
-			zero.set(0, 0, 0);
-			return zero;
-		}
+		else
+			return core::vector3d<float>(0, 0, 0);
+	}
+
+	core::aabbox3d<float> GravityBox::getBounds()
+	{
+		return bounds;
 	}
 
 	void GravityBox::setDownVector(core::vector3d<float> vec)
@@ -26,13 +26,9 @@ namespace Platformer
 		downVector.Z = vec.Z;
 	}
 
-	GravityBox::GravityBox(float minX, float maxX, float minY, float maxY, float minZ, float maxZ){
-		this->minX = minX;
-		this->maxX = maxX;
-		this->minY = minY;
-		this->maxY = maxY;
-		this->minZ = minZ;
-		this->maxZ = maxZ;
+	GravityBox::GravityBox(float minX, float maxX, float minY, float maxY, float minZ, float maxZ)
+	{
+		bounds = core::aabbox3d<float>(minX, minY, minZ, maxX, maxY, maxZ);
 	}
 
 } 

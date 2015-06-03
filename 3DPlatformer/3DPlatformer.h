@@ -46,7 +46,7 @@ namespace Platformer{
 
 		scene::ICameraSceneNode *camera;
 		scene::ISceneNodeAnimatorCollisionResponse * collider;
-		scene::IAnimatedMeshSceneNode *treeNode, *portalNode;
+		scene::IAnimatedMeshSceneNode *treeNode, *portalNode, *flagNode, *levelNode;
 		scene::ISceneNode *floorNode;
 		scene::ISceneNode *gravityBox;
 		scene::ILightSceneNode *sun;

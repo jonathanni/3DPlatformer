@@ -10,6 +10,7 @@
 #include <chrono>
 #include <thread>
 #include <vector>
+#include <sstream>
 
 #include <assert.h>
 
@@ -30,7 +31,8 @@ namespace Platformer
 	{
 		CAMERA = 0,
 		LIGHT = 1,
-		PICKABLE = 2
+		PICKABLE = 2,
+		NONPICKABLE = 3
 	};
 
 	ofstream Platformer::log;
@@ -94,15 +96,19 @@ namespace Platformer
 			core::vector3df(100, 10, 100), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
 		floorNode = smgr->addCubeSceneNode(2.0f, NULL, PICKABLE,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
+		flagNode = smgr->addAnimatedMeshSceneNode(loadMesh("flag.b3d"), NULL, NONPICKABLE, 
+			core::vector3df(-950, 250, 760), core::vector3df(0, 0, 0), core::vector3df(20, 20, 20));
+		levelNode = smgr->addAnimatedMeshSceneNode(loadMesh("level00.b3d"), NULL, PICKABLE,
+			core::vector3df(0, 1100, 0), core::vector3df(0, 0, 0), core::vector3df(150, 150, 150));
 
 		//fields.push_back(new GravityBox(-10000, 10000, -10000, 10000, -10000, 10000));
-		fields.push_back(new GravityBox(-10000, 10000, -10000, 10000, -10000, 10000));
+		fields.push_back(new GravityBox(-1070, 150, 200, 450, 550, 900));
+		fields.push_back(new GravityBox(-1070, 150, 100, 250, 400, 550));
 		//fields.push_back(new MassObject(new float[3]{0, 0, 0}, 100000));
 
-		core::vector3d<float> downVector;
-		downVector.set(0, -1, 0);
-
-		((GravityBox*)fields.at(0))->setDownVector(downVector);
+		((GravityBox*)fields.at(0))->setDownVector(core::vector3d<float>(0, -1, 0));
+		((GravityBox*)fields.at(1))->setDownVector(core::vector3d<float>(0, 0, 1));
+		
 		velocity.set(0, 0, 0);
 
 		sceneNodes.push_back(sun);
@@ -110,6 +116,8 @@ namespace Platformer
 		sceneNodes.push_back(floorNode);
 		sceneNodes.push_back(treeNode);
 		sceneNodes.push_back(portalNode);
+		sceneNodes.push_back(flagNode);
+		sceneNodes.push_back(levelNode);
 
 		treeNode->setMaterialFlag(video::EMF_LIGHTING, true);
 		treeNode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
@@ -126,7 +134,7 @@ namespace Platformer
 				*trans = smgr->createFlyStraightAnimator(portalNode->getPosition(),
 				                                         portalNode->getPosition() + core::vector3df(0, 50, 0),
 														 2000, true, true);
-			portalNode->addAnimator(rot);
+			portalNode->addAnimator(rot);                                                                                            
 			portalNode->addAnimator(trans);
 			
 			rot->drop();
@@ -140,14 +148,29 @@ namespace Platformer
 		floorNode->getMaterial(0).AmbientColor.set(0xff404040);
 		floorNode->getMaterial(0).Shininess = 0;
 
+		flagNode->setMaterialFlag(video::EMF_LIGHTING, true);
+		flagNode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
+		flagNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
+
+		flagNode->setAnimationSpeed(24);
+		flagNode->setFrameLoop(59, 119);
+
+		levelNode->setMaterialFlag(video::EMF_LIGHTING, true);
+		levelNode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
+		levelNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
+		
 		scene::ITriangleSelector *floorNodeSelector = smgr->createOctreeTriangleSelector(
-			((scene::IMeshSceneNode *)floorNode)->getMesh(), floorNode, 12);
+			((scene::IMeshSceneNode *)floorNode)->getMesh(), floorNode, 12),
+								 *levelNodeSelector = smgr->createOctreeTriangleSelector(
+			levelNode->getMesh(), levelNode, 64);
 
 		floorNode->setTriangleSelector(floorNodeSelector);
+		levelNode->setTriangleSelector(levelNodeSelector);
 
 		scene::IMetaTriangleSelector *metaSelector = smgr->createMetaTriangleSelector();
 
 		metaSelector->addTriangleSelector(floorNodeSelector);
+		metaSelector->addTriangleSelector(levelNodeSelector);
 
 		{
 			SKeyMap keyMap[6];
@@ -168,7 +191,7 @@ namespace Platformer
 
 			camera = smgr->addCameraSceneNodeFPS(0, 100, 0.4f, CAMERA, keyMap, 6, true, 3.0f);
 
-			camera->setPosition(core::vector3df(900, 900, 900));
+			camera->setPosition(core::vector3df(-870, 400, 760));
 			camera->setTarget(core::vector3df(0, 0, 0));
 			camera->setFarValue(5000);
 
@@ -177,6 +200,7 @@ namespace Platformer
 
 			metaSelector->drop();
 			floorNodeSelector->drop();
+			levelNodeSelector->drop();
 
 			camera->addAnimator(collider);
 			collider->drop();
@@ -211,8 +235,17 @@ namespace Platformer
 
 	void Platformer::drawBoundingBoxes()
 	{
-		for (scene::ISceneNode* i : sceneNodes)
+		for (scene::ISceneNode *i : sceneNodes)
 			driver->draw3DBox(i->getBoundingBox(), video::SColor(0xffff0000));
+		
+		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+
+		for (IGravityField *i : fields) {
+			core::aabbox3d<float> b = i->getBounds();
+			log << b.MinEdge.X << " " << b.MinEdge.Y << " " << b.MinEdge.Z << 
+				" -> " << b.MaxEdge.X << " " << b.MaxEdge.Y << " " << b.MaxEdge.Z << endl;
+			driver->draw3DBox(i->getBounds(), video::SColor(0xff00ff00));
+		}
 	}
 
 	void Platformer::run()

@@ -61,9 +61,6 @@
     <Image Include="irrlicht.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="dirt.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="concrete00.png">
       <Filter>Resource Files</Filter>
     </Image>
@@ -79,6 +76,9 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="portal.b3d">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="level00.b3d">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

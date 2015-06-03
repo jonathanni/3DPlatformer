@@ -10,10 +10,13 @@ namespace Platformer
 	{
 		private:
 			core::vector3d<float> downVector;
-			float minX, maxX, minY, maxY, minZ, maxZ;
+			core::aabbox3d<float> bounds;
 		public:
 			void setDownVector(core::vector3d<float>);
+
 			core::vector3d<float> calcDownVector(core::vector3d<float>);
+			core::aabbox3d<float> getBounds(void);
+
 			GravityBox(float, float, float, float, float, float);
 			
 	};

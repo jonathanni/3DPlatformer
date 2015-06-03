@@ -1,6 +1,10 @@
 #ifndef _MASSOBJECT_H
 #define _MASSOBJECT_H
+
 #include "IGravityField.h"
+
+#define PLATFORMER_GRAVITY_DEBUG_LIMIT 0.0001f
+
 namespace Platformer
 {
 	using namespace irr;
@@ -10,9 +14,10 @@ namespace Platformer
 		core::vector3d<float> position;
 		
 		float mass;
-
 	public:
 		core::vector3d<float> calcDownVector(core::vector3d<float>);
+		core::aabbox3d<float> getBounds(void);
+
 		MassObject(float[3], float);
 	};
 }
