@@ -289,7 +289,7 @@ namespace Platformer
 			{
 				add = i->calcDownVector(camera->getPosition());
 				add1 = i->calcDownVector1(camera->getPosition());
-				assert(core::vector3d<float>(NAN, NAN, NAN) != core::vector3d<float>(NAN, NAN, NAN));
+
 				totalDownVector = totalDownVector + add1;
 				// is NaN
 				if (!add.equals(add))
