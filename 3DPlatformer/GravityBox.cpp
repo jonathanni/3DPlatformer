@@ -16,7 +16,12 @@ namespace Platformer
 
 	core::vector3d<float> GravityBox::calcDownVector1(core::vector3d<float> cameraPos)
 	{
-		return downVector;
+		if (cameraPos.X > bounds.MinEdge.X && cameraPos.X < bounds.MaxEdge.X &&
+			cameraPos.Y > bounds.MinEdge.Y && cameraPos.Y < bounds.MaxEdge.Y &&
+			cameraPos.Z > bounds.MinEdge.Z && cameraPos.Z < bounds.MaxEdge.Z)
+			return downVector;
+		else
+			return core::vector3d<float>(0, 0, 0);
 	}
 
 	core::aabbox3d<float> GravityBox::getBounds()

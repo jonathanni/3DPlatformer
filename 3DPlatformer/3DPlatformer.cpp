@@ -303,10 +303,10 @@ namespace Platformer
 
 			// Included this check so that if the ground is being hit, the downVector still is being
 			// calculated (so its not 0), but doesnt affect the velocity of the object
-			if (!isFloor)
-				velocity.set(0, 0, 0);
-			else
-				velocity += totalDownVector;
+			//if (!isFloor)
+			//	velocity.set(0, 0, 0);
+			//else
+			velocity += totalDownVector;
 
 
 			core::vector3df upvec = camera->getUpVector();
