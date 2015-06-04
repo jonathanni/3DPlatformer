@@ -16,7 +16,7 @@ namespace Platformer
 
 	core::vector3d<float> GravityBox::calcDownVector1(core::vector3d<float> cameraPos)
 	{
-		return calcDownVector(cameraPos);
+		return downVector;
 	}
 
 	core::aabbox3d<float> GravityBox::getBounds()

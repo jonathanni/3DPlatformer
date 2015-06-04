@@ -292,35 +292,31 @@ namespace Platformer
 
 				totalDownVector = totalDownVector + add1;
 				// is NaN
-				if (!add.equals(add))
-				{
+				//if (!add.equals(add))
+				//{
 					//totalDownVector.set(0, 0, 0);
-					velocity.set(0, 0, 0);
-					isFloor = true;
-					break;
-				}
-
-				
+				//	velocity.set(0, 0, 0);
+				//	isFloor = true;
+				//	break;
+				//}
 			}
 
 			// Included this check so that if the ground is being hit, the downVector still is being
 			// calculated (so its not 0), but doesnt affect the velocity of the object
-			if (!isFloor){
+			if (!isFloor)
 				velocity.set(0, 0, 0);
+			else
+				velocity += totalDownVector;
+
+
+			core::vector3df upvec = camera->getUpVector();
+			normalizedDownVector = totalDownVector.normalize();
+			if (normalizedDownVector != temp)
+			{
+				temp = normalizedDownVector;
+				camera->setUpVector(-normalizedDownVector);
 			}
-			else{
-			velocity += totalDownVector;
-			}
 
-
-				core::vector3df upvec = camera->getUpVector();
-				normalizedDownVector = totalDownVector.normalize();
-				if (normalizedDownVector != temp){
-					
-					temp = normalizedDownVector;
-					camera->setUpVector(-normalizedDownVector);
-
-				}
 			core::vector3df up = getSurfaceTri(camera->getPosition(), totalDownVector.normalize())
 				.getNormal().normalize() * PLATFORMER_JUMP_FORCE;
 				
