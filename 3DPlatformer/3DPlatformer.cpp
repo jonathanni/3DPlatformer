@@ -308,7 +308,6 @@ namespace Platformer
 			//else
 			velocity += totalDownVector;
 
-
 			core::vector3df upvec = camera->getUpVector();
 			normalizedDownVector = totalDownVector.normalize();
 			if (normalizedDownVector != temp)

@@ -26,9 +26,8 @@ namespace Platformer{
 		void stop(void);
 
 		irr::IrrlichtDevice *device;
-
 					
-		
+		static ofstream log;
 
 		bool success = true;
 	private:
@@ -59,7 +58,7 @@ namespace Platformer{
 		core::vector3df temp;
 		std::vector<scene::ISceneNode*> sceneNodes;
 		std::thread *updateThread;
-		static ofstream log;
+
 		vector<IGravityField*> fields;
 		core::vector3df velocity;
 	};
