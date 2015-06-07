@@ -112,6 +112,7 @@ namespace Platformer
 		fields.push_back(new GravityBox(-330, -160, 550, 730, -180, 700));
 		fields.push_back(new GravityBox(-1050, -750, 950, 1250, -800, 480));
 		fields.push_back(new GravityBox(-1050, -750, 1250, 1400, -1050, -430));
+		fields.push_back(new MassObject(new float[3]{-800, 1125, 1100}, 10000000));
 
 		//{
 		//	float loc[3] = {-750, 850, 1000};
@@ -258,9 +259,9 @@ namespace Platformer
 	void Platformer::rotateCamera(int x, int y){
 		float new_x = x - (800 / 2);
 		float new_y = y - (600 / 2);
-	
-		rot[0] += new_y*PLATFORMER_ROTATE_SPEED;
-		rot[1] += new_x*PLATFORMER_ROTATE_SPEED;
+		
+			rot[0] += new_y*PLATFORMER_ROTATE_SPEED;
+			rot[1] += new_x*PLATFORMER_ROTATE_SPEED;
 	
 		cursor->setPosition(400, 300);
 	}
@@ -335,7 +336,7 @@ namespace Platformer
 			}
 
 			if (!(velocity.equals(core::vector3df(0, 0, 0))))
-				velocity += totalDownVector;
+			velocity += totalDownVector;
 
 			//camera->updateAbsolutePosition();
 			rotateCamera(cursor->getPosition().X, cursor->getPosition().Y);
@@ -364,10 +365,9 @@ namespace Platformer
 
 			lookat.normalize();
 			leftvector.normalize();
-
 			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE))
 			{
-				//collider->setGravity(core::vector3df(0, 0, 0));
+				collider->setGravity(core::vector3df(0, 0, 0));
 				velocity = (up)+(1 / PLATFORMER_TIME_CONSTANT)*totalDownVector;
 			}
 			else
