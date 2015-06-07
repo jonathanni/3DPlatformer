@@ -5,7 +5,7 @@
 #include "MyEventListener.h"
 #define PLATFORMER_TIME_CONSTANT 20
 #define PLATFORMER_RAY_LIMIT 10000
-#define PLATFORMER_JUMP_FORCE 30
+#define PLATFORMER_JUMP_FORCE 90
 #define PLATFORMER_SPEED 30
 #define PLATFORMER_ROTATE_SPEED .3f
 namespace Platformer{
