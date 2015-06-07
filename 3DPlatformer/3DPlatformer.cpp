@@ -93,7 +93,7 @@ namespace Platformer
 		treeNode = smgr->addAnimatedMeshSceneNode(loadMesh("tree00.b3d"), NULL, PICKABLE,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
 		portalNode = smgr->addAnimatedMeshSceneNode(loadMesh("portal.b3d"), NULL, PICKABLE,
-			core::vector3df(100, 10, 100), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
+			core::vector3df(-900, 1350, -1000), core::vector3df(180, 0, 0), core::vector3df(10, 10, 10));
 		floorNode = smgr->addCubeSceneNode(2.0f, NULL, PICKABLE,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
 		flagNode = smgr->addAnimatedMeshSceneNode(loadMesh("flag.b3d"), NULL, NONPICKABLE, 
@@ -101,17 +101,34 @@ namespace Platformer
 		levelNode = smgr->addAnimatedMeshSceneNode(loadMesh("level00.b3d"), NULL, PICKABLE,
 			core::vector3df(0, 1100, 0), core::vector3df(0, 0, 0), core::vector3df(150, 150, 150));
 
-		//fields.push_back(new GravityBox(-10000, 10000, -10000, 10000, -10000, 10000));
 		fields.push_back(new GravityBox(-1070, 150, 200, 350, 550, 900));
-		fields.push_back(new GravityBox(-1070, 150, 80, 200, 400, 550));
-		fields.push_back(new GravityBox(-1070, 150, 80, 200, 900, 1050));
-		fields.push_back(new GravityBox(-200, 180, 350, 550, -100, 900));
-		//fields.push_back(new MassObject(new float[3]{0, 0, 0}, 100000));
+		fields.push_back(new GravityBox(-1070, 150, 80, 230, 400, 550));
+		fields.push_back(new GravityBox(-1070, -300, 80, 230, 900, 1050));
+		fields.push_back(new GravityBox(-180, 180, 350, 550, -180, 900));
+		fields.push_back(new GravityBox(-150, 150, 550, 1250, 700, 900));
+		fields.push_back(new GravityBox(-300, -150, 80, 1250, 900, 1200));
+		fields.push_back(new GravityBox(-170, 170, 650, 850, 100, 700));
+		fields.push_back(new GravityBox(-170, 170, 850, 1220, 100, 250));
+		fields.push_back(new GravityBox(-330, -160, 550, 730, -180, 700));
+		fields.push_back(new GravityBox(-1050, -750, 950, 1250, -800, 480));
+		fields.push_back(new GravityBox(-1050, -750, 1250, 1400, -1050, -430));
+
+		//{
+		//	float loc[3] = {-750, 850, 1000};
+		//	fields.push_back(new MassObject(loc, 1000));
+		//}
 
 		((GravityBox*)fields.at(0))->setDownVector(core::vector3d<float>(0, -1, 0));
 		((GravityBox*)fields.at(1))->setDownVector(core::vector3d<float>(0, 0, 1));
 		((GravityBox*)fields.at(2))->setDownVector(core::vector3d<float>(0, 0, -1));
-		((GravityBox*)fields.at(2))->setDownVector(core::vector3d<float>(0, 1, 0));
+		((GravityBox*)fields.at(3))->setDownVector(core::vector3d<float>(0, 1, 0));
+		((GravityBox*)fields.at(4))->setDownVector(core::vector3d<float>(0, 0, 1));
+		((GravityBox*)fields.at(5))->setDownVector(core::vector3d<float>(1, 0, 0));
+		((GravityBox*)fields.at(6))->setDownVector(core::vector3d<float>(0, -1, 0));
+		((GravityBox*)fields.at(7))->setDownVector(core::vector3d<float>(0, 0, -1));
+		((GravityBox*)fields.at(8))->setDownVector(core::vector3d<float>(1, 0, 0));
+		((GravityBox*)fields.at(9))->setDownVector(core::vector3d<float>(0, 1, 0));
+		((GravityBox*)fields.at(10))->setDownVector(core::vector3d<float>(0, 1, 0));
 
 		velocity.set(0, 0, 0);
 
@@ -197,7 +214,7 @@ namespace Platformer
 
 			camera = smgr->addCameraSceneNodeFPS(0, 100, 0.4f, CAMERA, keyMap, 6, true, 3.0f);
 
-			camera->setPosition(core::vector3df(-870, 300, 760));
+			camera->setPosition(core::vector3df(-870, 1000, 760));
 			camera->setTarget(core::vector3df(0, 0, 0));
 			camera->setFarValue(5000);
 
@@ -208,7 +225,7 @@ namespace Platformer
 			floorNodeSelector->drop();
 			levelNodeSelector->drop();
 
-			camera->addAnimator(collider);
+			//camera->addAnimator(collider);
 			collider->drop();
 			
 			//cameraController = smgr->addEmptySceneNode();
@@ -325,13 +342,13 @@ namespace Platformer
 			lookat.normalize();
 			leftvector.normalize();
 			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE)){
-				collider->setGravity(core::vector3df(0, 0, 0));
+				//collider->setGravity(core::vector3df(0, 0, 0));
 				velocity = (up)+(1 / PLATFORMER_TIME_CONSTANT)*totalDownVector;
 			}
 			else{
-				collider->setGravity(totalDownVector * 1000);
-
+				//collider->setGravity(totalDownVector * 1000);
 			}
+
 			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_W))
 				camera->setPosition(camera->getPosition() + dir*PLATFORMER_SPEED);
 			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_S))
@@ -341,10 +358,9 @@ namespace Platformer
 			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_D))
 				camera->setPosition(camera->getPosition() + leftdir * PLATFORMER_SPEED);
 
+			velocity = core::vector3df(0, 0, 0);
+
 			camera->setPosition(camera->getPosition() + velocity);
-
-
-
 		}
 	}
 
