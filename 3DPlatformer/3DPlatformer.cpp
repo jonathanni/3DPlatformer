@@ -208,7 +208,7 @@ namespace Platformer
 			floorNodeSelector->drop();
 			levelNodeSelector->drop();
 
-			//camera->addAnimator(collider);
+			camera->addAnimator(collider);
 			collider->drop();
 			
 			//cameraController = smgr->addEmptySceneNode();
