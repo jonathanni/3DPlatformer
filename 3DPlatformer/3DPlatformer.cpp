@@ -50,9 +50,9 @@ namespace Platformer
 		device =
 			irr::createDevice(driverType, core::dimension2d<u32>(800, 600), 16,
 			false, true, false, &spaceBarEvent);
-		
+
 		log = ofstream("debug.log");
-		
+
 		if (!device || !log.is_open())
 			success = false;
 
@@ -96,7 +96,7 @@ namespace Platformer
 			core::vector3df(100, 10, 100), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
 		floorNode = smgr->addCubeSceneNode(2.0f, NULL, PICKABLE,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
-		flagNode = smgr->addAnimatedMeshSceneNode(loadMesh("flag.b3d"), NULL, NONPICKABLE, 
+		flagNode = smgr->addAnimatedMeshSceneNode(loadMesh("flag.b3d"), NULL, NONPICKABLE,
 			core::vector3df(-950, 250, 760), core::vector3df(0, 0, 0), core::vector3df(20, 20, 20));
 		levelNode = smgr->addAnimatedMeshSceneNode(loadMesh("level00.b3d"), NULL, PICKABLE,
 			core::vector3df(0, 1100, 0), core::vector3df(0, 0, 0), core::vector3df(150, 150, 150));
@@ -130,13 +130,13 @@ namespace Platformer
 
 		{
 			scene::ISceneNodeAnimator *rot =
-				smgr->createRotationAnimator(core::vector3df(0, 1.0f, 0)), 
+				smgr->createRotationAnimator(core::vector3df(0, 1.0f, 0)),
 				*trans = smgr->createFlyStraightAnimator(portalNode->getPosition(),
-				                                         portalNode->getPosition() + core::vector3df(0, 50, 0),
-														 2000, true, true);
+				portalNode->getPosition() + core::vector3df(0, 50, 0),
+				2000, true, true);
 			portalNode->addAnimator(rot);
 			portalNode->addAnimator(trans);
-			
+
 			rot->drop();
 			trans->drop();
 		}
@@ -158,10 +158,10 @@ namespace Platformer
 		levelNode->setMaterialFlag(video::EMF_LIGHTING, true);
 		levelNode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 		levelNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
-		
+
 		scene::ITriangleSelector *floorNodeSelector = smgr->createOctreeTriangleSelector(
 			((scene::IMeshSceneNode *)floorNode)->getMesh(), floorNode, 12),
-								 *levelNodeSelector = smgr->createOctreeTriangleSelector(
+			*levelNodeSelector = smgr->createOctreeTriangleSelector(
 			levelNode->getMesh(), levelNode, 64);
 
 		floorNode->setTriangleSelector(floorNodeSelector);
@@ -206,7 +206,7 @@ namespace Platformer
 
 			camera->addAnimator(collider);
 			collider->drop();
-			
+
 			//cameraController = smgr->addEmptySceneNode();
 			//cameraController->setPosition(camera->getPosition());
 			//cameraController->setRotation(camera->getRotation());
@@ -245,7 +245,7 @@ namespace Platformer
 	{
 		for (scene::ISceneNode *i : sceneNodes)
 			driver->draw3DBox(i->getBoundingBox(), video::SColor(0xffff0000));
-		
+
 		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 
 		for (IGravityField *i : fields) {
@@ -289,25 +289,17 @@ namespace Platformer
 				add1 = i->calcDownVector1(camera->getPosition());
 
 				totalDownVector = totalDownVector + add1;
-				// is NaN
-				//if (!add.equals(add))
-				//{
-					//totalDownVector.set(0, 0, 0);
-				//	velocity.set(0, 0, 0);
-				//	isFloor = true;
-				//	break;
-				//}
+
 			}
 
-			if (totalDownVector == core::vector3d<float>(0, 0, 0))
+			if (totalDownVector == core::vector3d<float>(0, 0, 0)){
+				velocity.set(0, 0, 0);
 				totalDownVector = core::vector3d<float>(0, -1, 0);
+			}
 
-			// Included this check so that if the ground is being hit, the downVector still is being
-			// calculated (so its not 0), but doesnt affect the velocity of the object
-			//if (!isFloor)
-			//	velocity.set(0, 0, 0);
-			//else
-			velocity += totalDownVector;
+			if (!(velocity.equals(core::vector3df(0, 0, 0)))){
+				velocity += totalDownVector;
+			}
 
 			core::vector3df upvec = camera->getUpVector();
 			normalizedDownVector = totalDownVector.normalize();
@@ -319,34 +311,36 @@ namespace Platformer
 
 			core::vector3df up = getSurfaceTri(camera->getPosition(), totalDownVector.normalize())
 				.getNormal().normalize() * PLATFORMER_JUMP_FORCE;
-				
-					//	log << "***************************************************" << isFloor << endl;
 
 			irr:core::matrix4 mat = camera->getRelativeTransformation();
-			
+
 			core::vector3d<float> lookat = core::vector3df(mat[8], mat[9], mat[10]);
 			core::vector3d<float> leftvector = core::vector3df(mat[0], mat[1], mat[2]);
 			core::vector3df dir = -normalizedDownVector.crossProduct(lookat.crossProduct(-normalizedDownVector));
+			core::vector3df leftdir = normalizedDownVector.crossProduct(leftvector.crossProduct(normalizedDownVector));
 			lookat.normalize();
 			leftvector.normalize();
+			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE)){
+				collider->setGravity(core::vector3df(0, 0, 0));
+				velocity = (up)+(1 / PLATFORMER_TIME_CONSTANT)*totalDownVector;
+			}
+			else{
+				collider->setGravity(totalDownVector * 1000);
 
-				//velocity = up + (1 / PLATFORMER_TIME_CONSTANT) * totalDownVector;
+			}
 			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_W))
 				camera->setPosition(camera->getPosition() + dir*PLATFORMER_SPEED);
 			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_S))
 				camera->setPosition(camera->getPosition() + -dir*PLATFORMER_SPEED);
 			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_A))
-				camera->setPosition(camera->getPosition() + -leftvector * PLATFORMER_SPEED);
+				camera->setPosition(camera->getPosition() + -leftdir * PLATFORMER_SPEED);
 			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_D))
-				camera->setPosition(camera->getPosition() + leftvector * PLATFORMER_SPEED);
-			//device->getEventReceiver()->OnEvent()
-			//camera->setPosition(camera->getPosition() + velocity);
-			collider->setGravity(totalDownVector * 1000);
+				camera->setPosition(camera->getPosition() + leftdir * PLATFORMER_SPEED);
 
-			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE))
-				collider->jump(1000);
+			camera->setPosition(camera->getPosition() + velocity);
 
-			log << camera->getPosition().X << " " << camera->getPosition().Y << " " << camera->getPosition().Z << endl;
+		
+
 		}
 	}
 
