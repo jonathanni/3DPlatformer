@@ -133,8 +133,11 @@ namespace Platformer
 		rot[0] = 0;
 		rot[1] = 0;
 		rot[2] = 0;
+
 		velocity.set(0, 0, 0);
+
 		cursor = device->getCursorControl();
+
 		sceneNodes.push_back(sun);
 		sceneNodes.push_back(sunController);
 		sceneNodes.push_back(floorNode);
@@ -255,16 +258,13 @@ namespace Platformer
 	void Platformer::rotateCamera(int x, int y){
 		float new_x = x - (800 / 2);
 		float new_y = y - (600 / 2);
-		
-		
-		
 	
-			rot[0] += new_y*PLATFORMER_ROTATE_SPEED;
-		
-			rot[1] += new_x*PLATFORMER_ROTATE_SPEED;
+		rot[0] += new_y*PLATFORMER_ROTATE_SPEED;
+		rot[1] += new_x*PLATFORMER_ROTATE_SPEED;
 	
 		cursor->setPosition(400, 300);
 	}
+
 	core::triangle3df Platformer::getSurfaceTri(core::vector3df pos, core::vector3df dir)
 	{
 		core::line3df ray = core::line3df(pos, pos + dir * PLATFORMER_RAY_LIMIT);
@@ -326,22 +326,25 @@ namespace Platformer
 				add1 = i->calcDownVector1(camera->getPosition());
 
 				totalDownVector = totalDownVector + add1;
-
 			}
 
-			if (totalDownVector == core::vector3d<float>(0, 0, 0)){
+			if (totalDownVector == core::vector3d<float>(0, 0, 0))
+			{
 				velocity.set(0, 0, 0);
 				totalDownVector = core::vector3d<float>(0, -1, 0);
 			}
 
-			if (!(velocity.equals(core::vector3df(0, 0, 0)))){
-			velocity += totalDownVector;
-			}
+			if (!(velocity.equals(core::vector3df(0, 0, 0))))
+				velocity += totalDownVector;
+
 			//camera->updateAbsolutePosition();
 			rotateCamera(cursor->getPosition().X, cursor->getPosition().Y);
 			camera->setRotation(core::vector3df(rot[0], rot[1], rot[2]));
+
 			core::vector3df upvec = camera->getUpVector();
+
 			normalizedDownVector = totalDownVector.normalize();
+
 			if (normalizedDownVector != temp)
 			{
 				temp = normalizedDownVector;
@@ -355,18 +358,23 @@ namespace Platformer
 			
 			core::vector3d<float> lookat = core::vector3df(mat[8], mat[9], mat[10]);
 			core::vector3d<float> leftvector = core::vector3df(mat[0], mat[1], mat[2]);
+
 			core::vector3df dir = -normalizedDownVector.crossProduct(lookat.crossProduct(-normalizedDownVector));
 			core::vector3df leftdir = normalizedDownVector.crossProduct(leftvector.crossProduct(normalizedDownVector));
+
 			lookat.normalize();
 			leftvector.normalize();
-			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE)){
+
+			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE))
+			{
 				//collider->setGravity(core::vector3df(0, 0, 0));
 				velocity = (up)+(1 / PLATFORMER_TIME_CONSTANT)*totalDownVector;
 			}
-			else{
+			else
 				collider->setGravity(totalDownVector * 1000);
-			}
+
 			log << rot[0] << " " << rot[1] << endl;
+
 			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_W)){
 				camera->setPosition(camera->getAbsolutePosition() + dir*PLATFORMER_SPEED);
 				camera->updateAbsolutePosition();
@@ -387,11 +395,10 @@ namespace Platformer
 				camera->updateAbsolutePosition();
 				camera->setRotation(core::vector3df(rot[0], rot[1], rot[2]));
 			}
+
 			camera->setPosition(camera->getPosition() + velocity);
 			camera->updateAbsolutePosition();
 			camera->setRotation(core::vector3df(rot[0], rot[1], rot[2]));
-		
-
 		}
 	}
 
