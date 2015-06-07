@@ -24,9 +24,6 @@
     <ClInclude Include="3DPlatformer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CustomCameraSceneNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="IGravityField.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -45,9 +42,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="3DPlatformer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CustomCameraSceneNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MassObject.cpp">

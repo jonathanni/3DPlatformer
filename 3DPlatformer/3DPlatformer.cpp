@@ -250,8 +250,6 @@ namespace Platformer
 
 		for (IGravityField *i : fields) {
 			core::aabbox3d<float> b = i->getBounds();
-			log << b.MinEdge.X << " " << b.MinEdge.Y << " " << b.MinEdge.Z << 
-				" -> " << b.MaxEdge.X << " " << b.MaxEdge.Y << " " << b.MaxEdge.Z << endl;
 			driver->draw3DBox(i->getBounds(), video::SColor(0xff00ff00));
 		}
 	}
@@ -301,6 +299,9 @@ namespace Platformer
 				//}
 			}
 
+			if (totalDownVector == core::vector3d<float>(0, 0, 0))
+				totalDownVector = core::vector3d<float>(0, -1, 0);
+
 			// Included this check so that if the ground is being hit, the downVector still is being
 			// calculated (so its not 0), but doesnt affect the velocity of the object
 			//if (!isFloor)
@@ -321,15 +322,15 @@ namespace Platformer
 				
 					//	log << "***************************************************" << isFloor << endl;
 
-		irr:core::matrix4 mat = camera->getRelativeTransformation();
+			irr:core::matrix4 mat = camera->getRelativeTransformation();
 			
 			core::vector3d<float> lookat = core::vector3df(mat[8], mat[9], mat[10]);
 			core::vector3d<float> leftvector = core::vector3df(mat[0], mat[1], mat[2]);
 			core::vector3df dir = -normalizedDownVector.crossProduct(lookat.crossProduct(-normalizedDownVector));
 			lookat.normalize();
 			leftvector.normalize();
-			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE))
-				velocity = up + (1 / PLATFORMER_TIME_CONSTANT) * totalDownVector;
+
+				//velocity = up + (1 / PLATFORMER_TIME_CONSTANT) * totalDownVector;
 			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_W))
 				camera->setPosition(camera->getPosition() + dir*PLATFORMER_SPEED);
 			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_S))
@@ -339,8 +340,13 @@ namespace Platformer
 			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_D))
 				camera->setPosition(camera->getPosition() + leftvector * PLATFORMER_SPEED);
 			//device->getEventReceiver()->OnEvent()
-			camera->setPosition(camera->getPosition() + velocity);
-			
+			//camera->setPosition(camera->getPosition() + velocity);
+			collider->setGravity(totalDownVector * 1000);
+
+			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE))
+				collider->jump(1000);
+
+			log << camera->getPosition().X << " " << camera->getPosition().Y << " " << camera->getPosition().Z << endl;
 		}
 	}
 

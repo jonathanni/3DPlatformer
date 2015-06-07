@@ -79,7 +79,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="3DPlatformer.h" />
-    <ClInclude Include="CustomCameraSceneNode.h" />
     <ClInclude Include="GravityBox.h" />
     <ClInclude Include="IGravityField.h" />
     <ClInclude Include="MassObject.h" />
@@ -89,7 +88,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3DPlatformer.cpp" />
-    <ClCompile Include="CustomCameraSceneNode.cpp" />
     <ClCompile Include="GravityBox.cpp" />
     <ClCompile Include="MassObject.cpp" />
     <ClCompile Include="stdafx.cpp">
