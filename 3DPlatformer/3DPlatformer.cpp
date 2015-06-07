@@ -237,10 +237,15 @@ namespace Platformer
 	void Platformer::rotateCamera(int x, int y){
 		float new_x = x - (800 / 2);
 		float new_y = y - (600 / 2);
-
-		rot[0] = new_y*PLATFORMER_ROTATE_SPEED;
-		rot[1] = new_x*PLATFORMER_ROTATE_SPEED;
 		
+		
+		
+	
+			rot[0] += new_y*PLATFORMER_ROTATE_SPEED;
+		
+			rot[1] += new_x*PLATFORMER_ROTATE_SPEED;
+	
+		cursor->setPosition(400, 300);
 	}
 	core::triangle3df Platformer::getSurfaceTri(core::vector3df pos, core::vector3df dir)
 	{
@@ -342,20 +347,31 @@ namespace Platformer
 			}
 			else{
 				collider->setGravity(totalDownVector * 1000);
-
 			}
 			log << rot[0] << " " << rot[1] << endl;
-			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_W))
-				camera->setPosition(camera->getPosition() + dir*PLATFORMER_SPEED);
-			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_S))
-				camera->setPosition(camera->getPosition() + -dir*PLATFORMER_SPEED);
-			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_A))
-				camera->setPosition(camera->getPosition() + -leftdir * PLATFORMER_SPEED);
-			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_D))
-				camera->setPosition(camera->getPosition() + leftdir * PLATFORMER_SPEED);
-
+			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_W)){
+				camera->setPosition(camera->getAbsolutePosition() + dir*PLATFORMER_SPEED);
+				camera->updateAbsolutePosition();
+				camera->setRotation(core::vector3df(rot[0], rot[1], rot[2]));
+			}
+			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_S)){
+				camera->setPosition(camera->getAbsolutePosition() + -dir*PLATFORMER_SPEED);
+				camera->updateAbsolutePosition();
+				camera->setRotation(core::vector3df(rot[0], rot[1], rot[2]));
+			}
+			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_A)){
+				camera->setPosition(camera->getAbsolutePosition() + -leftdir * PLATFORMER_SPEED);
+				camera->updateAbsolutePosition();
+				camera->setRotation(core::vector3df(rot[0], rot[1], rot[2]));
+			}
+			if (spaceBarEvent.IsKeyDown(irr::KEY_KEY_D)){
+				camera->setPosition(camera->getAbsolutePosition() + leftdir * PLATFORMER_SPEED);
+				camera->updateAbsolutePosition();
+				camera->setRotation(core::vector3df(rot[0], rot[1], rot[2]));
+			}
 			camera->setPosition(camera->getPosition() + velocity);
-
+			camera->updateAbsolutePosition();
+			camera->setRotation(core::vector3df(rot[0], rot[1], rot[2]));
 		
 
 		}
