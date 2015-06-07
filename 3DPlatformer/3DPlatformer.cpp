@@ -50,9 +50,9 @@ namespace Platformer
 		device =
 			irr::createDevice(driverType, core::dimension2d<u32>(800, 600), 16,
 			false, true, false, &spaceBarEvent);
-		
+
 		log = ofstream("debug.log");
-		
+
 		if (!device || !log.is_open())
 			success = false;
 
@@ -96,7 +96,7 @@ namespace Platformer
 			core::vector3df(-900, 1350, -1000), core::vector3df(180, 0, 0), core::vector3df(10, 10, 10));
 		floorNode = smgr->addCubeSceneNode(2.0f, NULL, PICKABLE,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
-		flagNode = smgr->addAnimatedMeshSceneNode(loadMesh("flag.b3d"), NULL, NONPICKABLE, 
+		flagNode = smgr->addAnimatedMeshSceneNode(loadMesh("flag.b3d"), NULL, NONPICKABLE,
 			core::vector3df(-950, 250, 760), core::vector3df(0, 0, 0), core::vector3df(20, 20, 20));
 		levelNode = smgr->addAnimatedMeshSceneNode(loadMesh("level00.b3d"), NULL, PICKABLE,
 			core::vector3df(0, 1100, 0), core::vector3df(0, 0, 0), core::vector3df(150, 150, 150));
@@ -112,6 +112,7 @@ namespace Platformer
 		fields.push_back(new GravityBox(-330, -160, 550, 730, -180, 700));
 		fields.push_back(new GravityBox(-1050, -750, 950, 1250, -800, 480));
 		fields.push_back(new GravityBox(-1050, -750, 1250, 1400, -1050, -430));
+		fields.push_back(new MassObject(new float[3]{-800, 1125, 1100}, 1000000));
 
 		//{
 		//	float loc[3] = {-750, 850, 1000};
@@ -154,13 +155,13 @@ namespace Platformer
 
 		{
 			scene::ISceneNodeAnimator *rot =
-				smgr->createRotationAnimator(core::vector3df(0, 1.0f, 0)), 
+				smgr->createRotationAnimator(core::vector3df(0, 1.0f, 0)),
 				*trans = smgr->createFlyStraightAnimator(portalNode->getPosition(),
-				                                         portalNode->getPosition() + core::vector3df(0, 50, 0),
-														 2000, true, true);
+				portalNode->getPosition() + core::vector3df(0, 50, 0),
+				2000, true, true);
 			portalNode->addAnimator(rot);
 			portalNode->addAnimator(trans);
-			
+
 			rot->drop();
 			trans->drop();
 		}
@@ -182,10 +183,10 @@ namespace Platformer
 		levelNode->setMaterialFlag(video::EMF_LIGHTING, true);
 		levelNode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 		levelNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
-		
+
 		scene::ITriangleSelector *floorNodeSelector = smgr->createOctreeTriangleSelector(
 			((scene::IMeshSceneNode *)floorNode)->getMesh(), floorNode, 12),
-								 *levelNodeSelector = smgr->createOctreeTriangleSelector(
+			*levelNodeSelector = smgr->createOctreeTriangleSelector(
 			levelNode->getMesh(), levelNode, 64);
 
 		floorNode->setTriangleSelector(floorNodeSelector);
@@ -215,12 +216,12 @@ namespace Platformer
 
 			//camera = smgr->addCameraSceneNode(0, core::vector3df(1000, 1000, 1000), core::vector3df(0, -100, 0), -1, true);
 
-		//	camera = smgr->addCameraSceneNodeFPS(0, 100, 0.4f, CAMERA, keyMap, 6, true, 3.0f);
+			//	camera = smgr->addCameraSceneNodeFPS(0, 100, 0.4f, CAMERA, keyMap, 6, true, 3.0f);
 			camera = smgr->addCameraSceneNode(NULL, core::vector3df(-870, 400, 760), core::vector3df(0, 0, 1));
 			camera->setPosition(core::vector3df(-870, 400, 760));
 			camera->setTarget(core::vector3df(0, 0, 0));
 			camera->setFarValue(5000);
-		//	camera->bindTargetAndRotation(true);
+			//	camera->bindTargetAndRotation(true);
 			collider = smgr->createCollisionResponseAnimator(metaSelector, camera,
 				core::vector3df(20, 60, 20), core::vector3df(0, 0, 0), core::vector3df(0, 0, 0));
 
@@ -230,7 +231,7 @@ namespace Platformer
 			camera->bindTargetAndRotation(true);
 			camera->addAnimator(collider);
 			collider->drop();
-			
+
 			//cameraController = smgr->addEmptySceneNode();
 			//cameraController->setPosition(camera->getPosition());
 			//cameraController->setRotation(camera->getRotation());
@@ -255,14 +256,14 @@ namespace Platformer
 	void Platformer::rotateCamera(int x, int y){
 		float new_x = x - (800 / 2);
 		float new_y = y - (600 / 2);
-		
-		
-		
-	
-			rot[0] += new_y*PLATFORMER_ROTATE_SPEED;
-		
-			rot[1] += new_x*PLATFORMER_ROTATE_SPEED;
-	
+
+
+
+
+		rot[0] += new_y*PLATFORMER_ROTATE_SPEED;
+
+		rot[1] += new_x*PLATFORMER_ROTATE_SPEED;
+
 		cursor->setPosition(400, 300);
 	}
 	core::triangle3df Platformer::getSurfaceTri(core::vector3df pos, core::vector3df dir)
@@ -282,7 +283,7 @@ namespace Platformer
 	{
 		for (scene::ISceneNode *i : sceneNodes)
 			driver->draw3DBox(i->getBoundingBox(), video::SColor(0xffff0000));
-		
+
 		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 
 		for (IGravityField *i : fields) {
@@ -300,7 +301,7 @@ namespace Platformer
 			smgr->drawAll();
 
 			// Draw bounding boxes
-		//	drawBoundingBoxes();
+			//	drawBoundingBoxes();
 
 			guienv->drawAll();
 
@@ -335,7 +336,7 @@ namespace Platformer
 			}
 
 			if (!(velocity.equals(core::vector3df(0, 0, 0)))){
-			velocity += totalDownVector;
+				velocity += totalDownVector;
 			}
 			//camera->updateAbsolutePosition();
 			rotateCamera(cursor->getPosition().X, cursor->getPosition().Y);
@@ -350,9 +351,9 @@ namespace Platformer
 
 			core::vector3df up = getSurfaceTri(camera->getPosition(), totalDownVector.normalize())
 				.getNormal().normalize() * PLATFORMER_JUMP_FORCE;
-				
-			irr:core::matrix4 mat = camera->getRelativeTransformation();
-			
+
+		irr:core::matrix4 mat = camera->getRelativeTransformation();
+
 			core::vector3d<float> lookat = core::vector3df(mat[8], mat[9], mat[10]);
 			core::vector3d<float> leftvector = core::vector3df(mat[0], mat[1], mat[2]);
 			core::vector3df dir = -normalizedDownVector.crossProduct(lookat.crossProduct(-normalizedDownVector));
@@ -360,7 +361,7 @@ namespace Platformer
 			lookat.normalize();
 			leftvector.normalize();
 			if (spaceBarEvent.IsKeyDown(irr::KEY_SPACE)){
-				//collider->setGravity(core::vector3df(0, 0, 0));
+				collider->setGravity(core::vector3df(0, 0, 0));
 				velocity = (up)+(1 / PLATFORMER_TIME_CONSTANT)*totalDownVector;
 			}
 			else{
@@ -390,7 +391,7 @@ namespace Platformer
 			camera->setPosition(camera->getPosition() + velocity);
 			camera->updateAbsolutePosition();
 			camera->setRotation(core::vector3df(rot[0], rot[1], rot[2]));
-		
+
 
 		}
 	}
