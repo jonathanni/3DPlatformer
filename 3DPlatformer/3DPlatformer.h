@@ -7,7 +7,7 @@
 #define PLATFORMER_RAY_LIMIT 10000
 #define PLATFORMER_JUMP_FORCE 30
 #define PLATFORMER_SPEED 30
-
+#define PLATFORMER_ROTATE_SPEED .3f;
 namespace Platformer{
 	
 	using namespace irr;
@@ -36,7 +36,7 @@ namespace Platformer{
 
 		// For Debug //
 		void drawBoundingBoxes(void);
-
+		void rotateCamera(int, int);
 		
 		//           //
 
@@ -48,6 +48,7 @@ namespace Platformer{
 		scene::ISceneNodeAnimatorCollisionResponse * collider;
 		scene::IAnimatedMeshSceneNode *treeNode, *portalNode, *flagNode, *levelNode;
 		scene::ISceneNode *floorNode;
+		gui::ICursorControl *cursor;
 		scene::ISceneNode *gravityBox;
 		scene::ILightSceneNode *sun;
 		scene::ISceneNode *sunController, *cameraController;
@@ -58,7 +59,7 @@ namespace Platformer{
 		core::vector3df temp;
 		std::vector<scene::ISceneNode*> sceneNodes;
 		std::thread *updateThread;
-
+		float rot[3];
 		vector<IGravityField*> fields;
 		core::vector3df velocity;
 	};
