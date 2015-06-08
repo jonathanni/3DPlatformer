@@ -28,7 +28,7 @@ namespace Platformer
 		
 		downVector = position - cameraPos;
 		//downVector = cameraPos - position;
-		if (downVector.getLengthSQ() > 50000){
+		if (downVector.getLengthSQ() > 100000){
 			return core::vector3df(0, 0, 0);
 		}
 		float force = mass / downVector.getLengthSQ();

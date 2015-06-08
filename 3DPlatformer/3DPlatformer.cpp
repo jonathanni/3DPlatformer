@@ -100,7 +100,16 @@ namespace Platformer
 			core::vector3df(-950, 250, 760), core::vector3df(0, 0, 0), core::vector3df(20, 20, 20));
 		levelNode = smgr->addAnimatedMeshSceneNode(loadMesh("level00.b3d"), NULL, PICKABLE,
 			core::vector3df(0, 1100, 0), core::vector3df(0, 0, 0), core::vector3df(150, 150, 150));
+		//gui::IGUIFont *f = NULL;
+		//f = guienv->addFont("myfont.xml", f);
+		//gui::IGUISkin *s = NULL;
+		//s->setFont(f);
+		//guienv->setSkin(s);
+		text = guienv->addStaticText(L"YOU WIN!!", core::rect<int>(0, 0, 100, 100), false, true);
+		text->setVisible(false);
 
+		
+		
 		fields.push_back(new GravityBox(-1070, 150, 200, 350, 550, 900));
 		fields.push_back(new GravityBox(-1070, 150, 80, 230, 400, 550));
 		fields.push_back(new GravityBox(-1070, -300, 80, 230, 900, 1050));
@@ -148,11 +157,12 @@ namespace Platformer
 		sceneNodes.push_back(levelNode);
 
 		treeNode->setMaterialFlag(video::EMF_LIGHTING, true);
+		treeNode->setID(1);
 		treeNode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 		treeNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
 
 		portalNode->setMaterialFlag(video::EMF_LIGHTING, true);
-
+		portalNode->setID(2);
 		portalNode->setJointMode(scene::EJUOR_CONTROL);
 		portalNode->setDebugDataVisible(scene::EDS_SKELETON);
 
@@ -171,12 +181,13 @@ namespace Platformer
 
 		floorNode->setMaterialFlag(video::EMF_LIGHTING, true);
 		floorNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
-
+		floorNode->setID(3);
 		floorNode->getMaterial(0).DiffuseColor.set(0xff000000);
 		floorNode->getMaterial(0).AmbientColor.set(0xff404040);
 		floorNode->getMaterial(0).Shininess = 0;
 
 		flagNode->setMaterialFlag(video::EMF_LIGHTING, true);
+		flagNode->setID(4);
 		flagNode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 		flagNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
 
@@ -184,6 +195,7 @@ namespace Platformer
 		flagNode->setFrameLoop(59, 119);
 
 		levelNode->setMaterialFlag(video::EMF_LIGHTING, true);
+		levelNode->setID(6);
 		levelNode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 		levelNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
 		
@@ -271,11 +283,10 @@ namespace Platformer
 		}if (downvector.Z != 0){
 			rot[1] += -new_y*PLATFORMER_ROTATE_SPEED*downvector.Z;
 			rot[0] += new_x*PLATFORMER_ROTATE_SPEED*downvector.Z;
-			if (rot[1] > 89.9){
-				rot[1] = 89.9;
-			}if (rot[1] < -89.9){
-				rot[1] = -89.9;
-			}
+			
+		}if (downvector.Y != 0 && downvector.Z != 0){
+			rot[0] += new_y*PLATFORMER_ROTATE_SPEED;
+			rot[1] += new_x*PLATFORMER_ROTATE_SPEED;
 		}
 		cursor->setPosition(400, 300);
 	}
@@ -354,7 +365,20 @@ namespace Platformer
 	{
 		while (isUpdate)
 		{
-
+			if (collider->collisionOccurred()){
+				//log << "asdfasdfasdf";
+				if (collider->getCollisionNode()->getID() == 2){
+				
+				}
+			}
+			core::vector3df cameraPos = camera->getPosition();
+			core::aabbox3d<float> bounds = ((GravityBox*)fields.at(10))->getBounds();
+			if (cameraPos.X > bounds.MinEdge.X && cameraPos.X < bounds.MaxEdge.X &&
+				cameraPos.Y > bounds.MinEdge.Y && cameraPos.Y < bounds.MaxEdge.Y &&
+				cameraPos.Z > bounds.MinEdge.Z && cameraPos.Z < bounds.MaxEdge.Z){
+				log << "asdfasdf" << endl;
+				text->setVisible(true);
+			}
 			bool isFloor = true;
 			core::vector3d<float> totalDownVector;
 			totalDownVector.set(0, 0, 0);
@@ -393,7 +417,7 @@ namespace Platformer
 			num = acos(num);
 			
 			core::vector3df rotation = toEuler(axis.X, axis.Y, axis.Z, num)*(180 / 3.14);
-			log << rot[0] << endl;
+			//log << rot[0] << endl;
 		//	camera->setRotation(camera->getRotation() + rotation);
 			camera->setRotation(core::vector3df(rot[0], rot[1], rot[2]));
 			

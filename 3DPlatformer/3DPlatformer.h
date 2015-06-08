@@ -45,7 +45,7 @@ namespace Platformer{
 		video::IVideoDriver *driver;
 		scene::ISceneManager *smgr;
 		gui::IGUIEnvironment *guienv;
-
+		gui::IGUIStaticText *text;
 		scene::ICameraSceneNode *camera;
 		scene::ISceneNodeAnimatorCollisionResponse * collider;
 		scene::IAnimatedMeshSceneNode *treeNode, *portalNode, *flagNode, *levelNode;
