@@ -38,7 +38,7 @@ namespace Platformer{
 
 		// For Debug //
 		void drawBoundingBoxes(void);
-		void rotateCamera(int, int);
+		void rotateCamera(int, int, core::vector3df);
 		
 		//           //
 

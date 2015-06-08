@@ -256,13 +256,17 @@ namespace Platformer
 		return mesh;
 	}
 
-	void Platformer::rotateCamera(int x, int y){
+	void Platformer::rotateCamera(int x, int y, core::vector3df downvector){
 		float new_x = x - (800 / 2);
 		float new_y = y - (600 / 2);
-		
-			rot[0] += new_y*PLATFORMER_ROTATE_SPEED;
-			rot[1] += new_x*PLATFORMER_ROTATE_SPEED;
-	
+		if (downvector.Y != 0){
+			rot[0] += new_y*PLATFORMER_ROTATE_SPEED*-downvector.Y;
+			rot[1] += new_x*PLATFORMER_ROTATE_SPEED*-downvector.Y;
+			rot[2] = 0;
+		}if (downvector.Z != 0){
+			rot[1] += -new_y*PLATFORMER_ROTATE_SPEED*downvector.Z;
+			rot[0] += new_x*PLATFORMER_ROTATE_SPEED*downvector.Z;
+		}
 		cursor->setPosition(400, 300);
 	}
 
@@ -366,7 +370,7 @@ namespace Platformer
 			velocity += totalDownVector;
 
 			//camera->updateAbsolutePosition();
-			rotateCamera(cursor->getPosition().X, cursor->getPosition().Y);
+			rotateCamera(cursor->getPosition().X, cursor->getPosition().Y, totalDownVector);
 			
 
 			core::vector3df upvec = camera->getUpVector();
@@ -379,9 +383,9 @@ namespace Platformer
 			num = acos(num);
 			
 			core::vector3df rotation = toEuler(axis.X, axis.Y, axis.Z, num)*(180 / 3.14);
-			log << rotation.X << " " << rotation.Y << " " << rotation.Z << endl;
+			//log << rotation.X << " " << rotation.Y << " " << rotation.Z << endl;
 		//	camera->setRotation(camera->getRotation() + rotation);
-			camera->setRotation(core::vector3df(rot[0], rot[1], rot[2])+rotation);
+			camera->setRotation(core::vector3df(rot[0], rot[1], rot[2]));
 			
 			if (normalizedDownVector != temp)
 			{
