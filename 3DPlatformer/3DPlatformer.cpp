@@ -90,16 +90,27 @@ namespace Platformer
 
 		sunController->setRotation(core::vector3df(-90, -90, 0));
 
-		treeNode = smgr->addAnimatedMeshSceneNode(loadMesh("tree00.b3d"), NULL, PICKABLE,
-			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
-		portalNode = smgr->addAnimatedMeshSceneNode(loadMesh("portal.b3d"), NULL, PICKABLE,
+		for (int i = 0; i < PLATFORMER_TREE_COUNT; i++)
+		{
+			treeNode[i] = smgr->addMeshSceneNode(loadMesh("tree00.b3d"), NULL, PICKABLE,
+				core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10, 10, 10));
+		}
+
+		portalNode = smgr->addMeshSceneNode(loadMesh("portal.b3d"), NULL, PICKABLE,
 			core::vector3df(-900, 1350, -1000), core::vector3df(180, 0, 0), core::vector3df(10, 10, 10));
 		floorNode = smgr->addCubeSceneNode(2.0f, NULL, PICKABLE,
 			core::vector3df(0, 0, 0), core::vector3df(0, 0, 0), core::vector3df(10000, 1, 10000));
-		flagNode = smgr->addAnimatedMeshSceneNode(loadMesh("flag.b3d"), NULL, NONPICKABLE, 
+		flagNode = smgr->addMeshSceneNode(loadMesh("flag.b3d"), NULL, NONPICKABLE, 
 			core::vector3df(-950, 250, 760), core::vector3df(0, 0, 0), core::vector3df(20, 20, 20));
-		levelNode = smgr->addAnimatedMeshSceneNode(loadMesh("level00.b3d"), NULL, PICKABLE,
+		levelNode = smgr->addMeshSceneNode(loadMesh("level00.b3d"), NULL, PICKABLE,
 			core::vector3df(0, 1100, 0), core::vector3df(0, 0, 0), core::vector3df(150, 150, 150));
+
+		treeNode[0]->setPosition(core::vector3df(-700, 250, 650));
+		treeNode[1]->setPosition(core::vector3df(-500, 250, 650));
+		//treeNode[2]->setPosition(core::vector3df(-500, 250, 650));
+		//treeNode[3]->setPosition(core::vector3df(-300, 250, 650));
+		//treeNode[4]->setPosition(core::vector3df(-100, 400, 900));
+		//treeNode[4]->setRotation(core::vector3df(90, 0, 0));
 
 		fields.push_back(new GravityBox(-1070, 150, 200, 350, 550, 900));
 		fields.push_back(new GravityBox(-1070, 150, 80, 230, 400, 550));
@@ -112,6 +123,7 @@ namespace Platformer
 		fields.push_back(new GravityBox(-330, -160, 550, 730, -180, 700));
 		fields.push_back(new GravityBox(-1050, -750, 950, 1250, -800, 480));
 		fields.push_back(new GravityBox(-1050, -750, 1250, 1400, -1050, -430));
+
 		fields.push_back(new MassObject(new float[3]{-800, 1125, 1100}, 10000000));
 
 		//{
@@ -142,19 +154,22 @@ namespace Platformer
 		sceneNodes.push_back(sun);
 		sceneNodes.push_back(sunController);
 		sceneNodes.push_back(floorNode);
-		sceneNodes.push_back(treeNode);
+
+		for (int i = 0; i < PLATFORMER_TREE_COUNT; i++)
+			sceneNodes.push_back(treeNode[i]);
+
 		sceneNodes.push_back(portalNode);
 		sceneNodes.push_back(flagNode);
 		sceneNodes.push_back(levelNode);
 
-		treeNode->setMaterialFlag(video::EMF_LIGHTING, true);
-		treeNode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
-		treeNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
+		for (int i = 0; i < PLATFORMER_TREE_COUNT; i++)
+		{
+			treeNode[i]->setMaterialFlag(video::EMF_LIGHTING, true);
+			treeNode[i]->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
+			treeNode[i]->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
+		}
 
 		portalNode->setMaterialFlag(video::EMF_LIGHTING, true);
-
-		portalNode->setJointMode(scene::EJUOR_CONTROL);
-		portalNode->setDebugDataVisible(scene::EDS_SKELETON);
 
 		{
 			scene::ISceneNodeAnimator *rot =
@@ -180,9 +195,6 @@ namespace Platformer
 		flagNode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 		flagNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
 
-		flagNode->setAnimationSpeed(24);
-		flagNode->setFrameLoop(59, 119);
-
 		levelNode->setMaterialFlag(video::EMF_LIGHTING, true);
 		levelNode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 		levelNode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
@@ -190,13 +202,15 @@ namespace Platformer
 		scene::ITriangleSelector *floorNodeSelector = smgr->createOctreeTriangleSelector(
 			((scene::IMeshSceneNode *)floorNode)->getMesh(), floorNode, 12),
 								 *levelNodeSelector = smgr->createOctreeTriangleSelector(
-			levelNode->getMesh(), levelNode, 64);
+			levelNode->getMesh(), levelNode, 32);
 
 		floorNode->setTriangleSelector(floorNodeSelector);
 		levelNode->setTriangleSelector(levelNodeSelector);
 
 		scene::IMetaTriangleSelector *metaSelector = smgr->createMetaTriangleSelector();
+
 		cameraPlane = core::vector3df(1, 0, 0);
+
 		metaSelector->addTriangleSelector(floorNodeSelector);
 		metaSelector->addTriangleSelector(levelNodeSelector);
 

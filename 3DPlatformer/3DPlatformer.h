@@ -9,8 +9,10 @@
 #define PLATFORMER_JUMP_FORCE 90
 #define PLATFORMER_SPEED 30
 #define PLATFORMER_ROTATE_SPEED .3f
+#define PLATFORMER_TREE_COUNT 2
 
-namespace Platformer{
+namespace Platformer
+{
 	
 	using namespace irr;
 	using namespace std;
@@ -48,7 +50,7 @@ namespace Platformer{
 
 		scene::ICameraSceneNode *camera;
 		scene::ISceneNodeAnimatorCollisionResponse * collider;
-		scene::IAnimatedMeshSceneNode *treeNode, *portalNode, *flagNode, *levelNode;
+		scene::IMeshSceneNode *treeNode[PLATFORMER_TREE_COUNT], *portalNode, *flagNode, *levelNode;
 		scene::ISceneNode *floorNode;
 		gui::ICursorControl *cursor;
 		scene::ISceneNode *gravityBox;
