@@ -288,6 +288,11 @@ namespace Platformer
 			rot[0] += new_y*PLATFORMER_ROTATE_SPEED;
 			rot[1] += new_x*PLATFORMER_ROTATE_SPEED;
 		}
+		if (downvector.Y != 0 && downvector.Z != 0){
+			rot[0] += new_y*PLATFORMER_ROTATE_SPEED;
+			rot[1] += new_x*PLATFORMER_ROTATE_SPEED;
+		}
+
 		cursor->setPosition(400, 300);
 	}
 
